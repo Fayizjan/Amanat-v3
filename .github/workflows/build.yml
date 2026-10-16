@@ -1,0 +1,54 @@
+name: HTML to APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make Android Studio Project Structure
+        run: |
+          mkdir -p myapp/app/src/main/assets myapp/app/src/main/java/com/app/html myapp/app/src/main/res/values
+          
+          # نسخ ملف الـ HTML المحلي
+          cp index.html myapp/app/src/main/assets/index.html
+
+          # ملف الـ Manifest
+          echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.app.html"><application android:label="My HTML App"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter></activity></application></manifest>' > myapp/app/src/main/AndroidManifest.xml
+
+          # ملف الجافا لتشغيل WebView
+          echo 'package com.app.html; import android.app.Activity; import android.os.Bundle; import android.webkit.WebView; public class MainActivity extends Activity { @Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); WebView w = new WebView(this); w.getSettings().setJavaScriptEnabled(true); w.loadUrl("file:///android_asset/index.html"); setContentView(w); }}' > myapp/app/src/main/java/com/app/html/MainActivity.java
+
+          # إعدادات البناء المبسطة
+          echo 'include ":app"' > myapp/settings.gradle
+          echo 'rootProject.name="MyApp"' >> myapp/settings.gradle
+          echo 'plugins { id "com.android.application" version "7.4.2" apply false }' > myapp/build.gradle
+          echo 'plugins { id "com.android.application" }' > myapp/app/build.gradle
+          echo 'android { namespace "com.app.html" compileSdk 33 defaultConfig { applicationId "com.app.html" minSdk 21 targetSdk 33 versionCode 1 versionName "1.0" } }' >> myapp/app/build.gradle
+          echo 'sdk.dir=/usr/local/lib/android/sdk' > myapp/local.properties
+
+          cd myapp
+          chmod +x gradlew || true
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper
+          fi
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: myapp/app/build/outputs/apk/debug/app-debug.apk
+          
