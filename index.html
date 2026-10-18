@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#f37021">
-<title>الأمانات v3</title>
+<title>الأمانات v3.1</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -490,13 +490,15 @@ body.no-scroll { overflow: hidden; }
    بطاقات قابلة للتوسع
    =========================== */
 .expandable-list { display: grid; gap: 10px; }
-.expandable-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border-soft); transition: all var(--transition); overflow: hidden; }
-.expandable-card.expanded { box-shadow: var(--shadow-md); border-color: var(--primary-soft); }
-.card-summary { padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-right: 4px solid; transition: background var(--transition); }
+.expandable-card { background: var(--white); border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-soft); transition: all var(--transition); overflow: hidden; }
+.expandable-card.expanded { box-shadow: var(--shadow-md); border-color: var(--primary-soft); transform: translateY(-2px); }
+.card-summary { padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-right: 4px solid; transition: background var(--transition); border-radius: 12px; }
 .card-summary:hover { background: var(--border-soft); }
-.card-summary.deposit { border-right-color: var(--success); }
-.card-summary.withdraw { border-right-color: var(--danger); }
+.card-summary.deposit { border-right-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+.card-summary.withdraw { border-right-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
 .card-summary.neutral { border-right-color: var(--primary); }
+.card-summary.deposit:hover { background: rgba(16, 185, 129, 0.1); }
+.card-summary.withdraw:hover { background: rgba(239, 68, 68, 0.1); }
 .card-summary-info { flex: 1; min-width: 0; }
 .card-summary-title { font-size: 15px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .card-summary-sub { font-size: 12.5px; color: var(--text-light); margin-top: 3px; display: flex; gap: 12px; flex-wrap: wrap; }
@@ -509,8 +511,10 @@ body.no-scroll { overflow: hidden; }
 
 .card-details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
 .expandable-card.expanded .card-details { max-height: 2000px; }
-.card-details-inner { padding: 0 16px 14px; border-top: 1px dashed var(--border); padding-top: 14px; }
-.detail-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--border-soft); }
+.card-details-inner { background: var(--bg); border-radius: 0 0 12px 12px; padding: 16px; border-top: 1px dashed var(--border); }
+body.dark .card-details-inner { background: rgba(0,0,0,0.2); }
+.detail-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 13px; border-bottom: 1px dashed rgba(0,0,0,0.05); }
+body.dark .detail-row { border-bottom-color: rgba(255,255,255,0.05); }
 .detail-row:last-child { border-bottom: none; }
 .detail-label { color: var(--text-soft); font-weight: 600; flex-shrink: 0; }
 .detail-value { color: var(--text); font-weight: 700; text-align: left; word-break: break-word; }
@@ -518,13 +522,20 @@ body.no-scroll { overflow: hidden; }
 .tag-sort { font-size: 11px; font-weight: 800; padding: 2px 9px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-soft); }
 
 .card-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.card-actions .btn { padding: 8px 14px; font-size: 13px; flex: 1; min-width: 90px; }
+.card-actions .btn { padding: 8px 14px; font-size: 13px; flex: 1; min-width: 90px; box-shadow: none; }
 
 .grouped-card .card-summary { border-right-color: var(--primary); }
 .grouped-card .tx-list { display: grid; gap: 8px; margin-top: 10px; }
 .grouped-tx { background: var(--border-soft); padding: 10px 12px; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; border-right: 3px solid; }
 .grouped-tx.deposit { border-right-color: var(--success); }
 .grouped-tx.withdraw { border-right-color: var(--danger); }
+
+/* النصوص داخل البطاقة الجديدة */
+.card-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.card-type { font-size: 12px; font-weight: 700; }
+.card-type.dep { color: var(--success); }
+.card-type.wd { color: var(--danger); }
+.card-sub-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-soft); margin-top: 4px; }
 
 /* ===========================
    حالة فارغة
@@ -581,9 +592,13 @@ body.no-scroll { overflow: hidden; }
 .stat-card-header { font-size: 12px; font-weight: 800; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,0.06); letter-spacing: 0.3px; }
 .stat-card-big.syp .stat-card-header { color: var(--primary); }
 .stat-card-big.usd .stat-card-header { color: var(--success); }
-.stat-balance { font-size: 24px; font-weight: 900; direction: ltr; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed; }
-.stat-card-big.syp .stat-balance { color: var(--primary); border-bottom-color: var(--primary-soft); }
-.stat-card-big.usd .stat-balance { color: var(--success); border-bottom-color: var(--success-soft); }
+.stat-balance-container { display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed; }
+.stat-card-big.syp .stat-balance-container { border-bottom-color: var(--primary-soft); }
+.stat-card-big.usd .stat-balance-container { border-bottom-color: var(--success-soft); }
+.stat-balance { font-size: 24px; font-weight: 900; direction: ltr; margin: 0 !important; padding: 0 !important; border: none !important; }
+.stat-currency { font-size: 14px; font-weight: 800; opacity: 0.8; }
+.stat-card-big.syp .stat-balance, .stat-card-big.syp .stat-currency { color: var(--primary); }
+.stat-card-big.usd .stat-balance, .stat-card-big.usd .stat-currency { color: var(--success); }
 .stat-line { display: flex; justify-content: space-between; font-size: 11.5px; padding: 3px 0; color: var(--text-soft); }
 .stat-line-label { font-weight: 600; }
 .stat-line-value { font-weight: 800; direction: ltr; }
@@ -615,71 +630,15 @@ body.no-scroll { overflow: hidden; }
 .form-group textarea { resize: vertical; min-height: 60px; }
 .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 12px center; padding-left: 36px; }
 
-/* تصميم النافذة المضغوطة */
 .tx-compact-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .tx-compact-customer { font-size: 14px; font-weight: 800; color: var(--text); }
 .tx-compact-date { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; background: var(--white); color: var(--text); width: auto; }
 .tx-compact-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
 .tx-compact-row .form-group { margin-bottom: 0; }
-.tx-compact-amount { flex: 1; position: relative; }
-.tx-compact-amount input { padding-left: 70px; font-size: 16px; font-weight: 700; }
-.tx-compact-currency { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; font-weight: 800; font-size: 13px; color: var(--primary); cursor: pointer; padding: 4px; }
-.tx-compact-currency:focus { outline: none; }
-/* تصميم خانة المبلغ والعملة المضغوطة */
-.tx-compact-amount-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-bottom: 14px;
-}
 
-.tx-compact-amount-group input {
-    width: 100%;
-    padding: 12px 14px;
-    padding-left: 70px; /* مساحة للعملة على اليسار */
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 700;
-    background: var(--white);
-    color: var(--text);
-    font-family: inherit;
-}
+.amount-grid { display: grid; grid-template-columns: 1fr 80px; gap: 8px; align-items: end; }
+.amount-grid .form-group { margin-bottom: 0; }
 
-.tx-compact-amount-group input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
-}
-
-/* زر العملة المصغر */
-.tx-currency-select {
-    position: absolute;
-    left: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 55px;
-    height: 32px;
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    background: var(--bg);
-    font-weight: 800;
-    font-size: 12px;
-    color: var(--primary);
-    cursor: pointer;
-    text-align: center;
-    padding: 0 2px;
-    font-family: inherit;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-}
-
-.tx-currency-select:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-#inputRecipient option[value="__manage__"] { color: #f37021; font-weight: 700; }
 .search-result-box { max-height: 200px; overflow-y: auto; margin-top: 6px; border-radius: var(--radius-sm); }
 .search-result-item { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; cursor: pointer; transition: all var(--transition); font-size: 13px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .search-result-item:hover { background: var(--primary-light); border-color: var(--primary); }
@@ -806,52 +765,81 @@ body.no-bottom-nav .toast { bottom: 24px; }
     #print-container tr { page-break-inside: avoid; }
     @page { size: A4 portrait; margin: 12mm 10mm; }
 }
-/* تصميم الشبكة للمبلغ والعملة (يمنع التراكب نهائياً) */
-.amount-grid {
-    display: grid;
-    grid-template-columns: 1fr 80px; /* العمود الأول للمبلغ، والثاني للعملة */
-    gap: 8px;
-    align-items: end;
-}
 
-.amount-grid .form-group {
-    margin-bottom: 0;
+/* شاشة الحماية */
+.lock-screen {
+    position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; text-align: center;
 }
-/* حاوية الرصيد لترتيب الرقم والعملة بجانب بعضهما */
-.stat-balance-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px dashed;
+body.dark .lock-screen { background: #0f172a; }
+.lock-box {
+    background: var(--white); padding: 30px 25px; border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); width: 100%; max-width: 320px;
+    animation: popIn 0.3s ease-out;
 }
-
-.stat-card-big.syp .stat-balance-container { border-bottom-color: var(--primary-soft); }
-.stat-card-big.usd .stat-balance-container { border-bottom-color: var(--success-soft); }
-
-/* تعديل الرقم ليكون أنيقاً */
-.stat-balance {
-    font-size: 24px;
-    font-weight: 900;
-    direction: ltr;
-    margin: 0 !important; 
-    padding: 0 !important;
-    border: none !important;
+.lock-icon { font-size: 50px; margin-bottom: 15px; }
+.lock-box h2 { font-size: 22px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
+.lock-box p { font-size: 13px; color: var(--text-soft); margin-bottom: 20px; }
+.lock-box input {
+    width: 100%; padding: 15px; text-align: center; font-size: 24px;
+    letter-spacing: 10px; border: 2px solid var(--border); border-radius: var(--radius);
+    font-weight: 900; direction: ltr; color: var(--text); background: var(--bg);
 }
-
-/* إضافة العملة بجانب الرقم */
-.stat-currency {
-    font-size: 14px;
-    font-weight: 800;
-    opacity: 0.8;
+.lock-box input:focus { outline: none; border-color: var(--primary); }
+/* ===========================
+   تصميم نافذة إعدادات الحماية العصرية
+   =========================== */
+.pin-modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.6); 
+    display: none; align-items: center; justify-content: center; 
+    z-index: 5000; backdrop-filter: blur(5px); animation: fadeIn 0.2s;
 }
+.pin-modal-overlay.show { display: flex; }
+.pin-modal {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 90%; max-width: 350px; padding: 24px; text-align: center;
+    box-shadow: var(--shadow-lg); animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pin-modal-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+.pin-modal h3 { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+.pin-modal p { font-size: 12px; color: var(--text-light); margin-bottom: 20px; }
 
-.stat-card-big.syp .stat-balance { color: var(--primary); }
-.stat-card-big.syp .stat-currency { color: var(--primary); }
-.stat-card-big.usd .stat-balance { color: var(--success); }
-.stat-card-big.usd .stat-currency { color: var(--success); }
+/* مفتاح التشغيل / الإطفاء */
+.pin-toggle-wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg); padding: 12px 16px; border-radius: var(--radius);
+    margin-bottom: 20px; border: 1px solid var(--border); cursor: pointer;
+}
+.pin-toggle-label { font-size: 14px; font-weight: 800; color: var(--text); }
+.pin-switch {
+    position: relative; width: 46px; height: 26px; flex-shrink: 0;
+}
+.pin-switch input { opacity: 0; width: 0; height: 0; }
+.pin-slider {
+    position: absolute; cursor: pointer; inset: 0; background: #cbd5e1;
+    transition: .4s; border-radius: 34px;
+}
+.pin-slider:before {
+    position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+    background: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+input:checked + .pin-slider { background: var(--success); }
+input:checked + .pin-slider:before { transform: translateX(20px); }
+
+/* حقول الإدخال */
+.pin-inputs { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.pin-input-group { display: flex; flex-direction: column; text-align: right; }
+.pin-input-group label { font-size: 12px; font-weight: 700; color: var(--text-soft); margin-bottom: 4px; }
+.pin-input-group input {
+    width: 100%; padding: 12px; text-align: center; font-size: 18px;
+    letter-spacing: 8px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+    font-weight: 900; direction: ltr; color: var(--text); background: var(--white);
+    font-family: 'Cairo', sans-serif;
+}
+.pin-input-group input:focus { outline: none; border-color: var(--primary); }
+.pin-input-group input:disabled { background: var(--border-soft); opacity: 0.6; cursor: not-allowed; }
+.pin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 </style>
 </head>
 <body>
@@ -886,11 +874,12 @@ body.no-bottom-nav .toast { bottom: 24px; }
         <button class="drawer-item" data-action="backup"><span class="drawer-item-icon">💾</span><span>نسخة احتياطية</span></button>
         <button class="drawer-item" data-action="restore"><span class="drawer-item-icon">📂</span><span>استيراد نسخة</span></button>
         <div class="drawer-divider"></div>
+        <button class="drawer-item" id="btnSetPin"><span class="drawer-item-icon">🔒</span><span>تعيين رمز حماية</span></button>
         <button class="drawer-item" data-action="dark-mode"><span class="drawer-item-icon" id="drawerDarkIcon">🌙</span><span id="drawerDarkText">الوضع الليلي</span></button>
     </div>
     <div class="drawer-footer" id="drawerFooter">
         <button class="about-link" id="btnAbout">حول الأمانات</button>
-        <div class="version-text">الإصدار 3.0</div>
+        <div class="version-text">الإصدار 3.1</div>
     </div>
 </aside>
 
@@ -978,22 +967,22 @@ body.no-bottom-nav .toast { bottom: 24px; }
             </div>
         </div>
         <div class="customer-stats">
-    <div class="stat-card-big syp">
-        <div class="stat-balance-container">
-            <span class="stat-balance" id="custBalSYP">0</span>
-            <span class="stat-currency">ل.س</span>
-        </div>
-        <div class="stat-line"><span class="stat-line-label">💰 إيداع</span><span class="stat-line-value dep" id="custDepSYP">0</span></div>
-        <div class="stat-line"><span class="stat-line-label">💸 سحب</span><span class="stat-line-value wd" id="custWdSYP">0</span></div>
-    </div>
-    <div class="stat-card-big usd">
-        <div class="stat-balance-container">
-            <span class="stat-balance" id="custBalUSD">0</span>
-            <span class="stat-currency">$</span>
-        </div>
-        <div class="stat-line"><span class="stat-line-label">💰 إيداع</span><span class="stat-line-value dep" id="custDepUSD">0</span></div>
-        <div class="stat-line"><span class="stat-line-label">💸 سحب</span><span class="stat-line-value wd" id="custWdUSD">0</span></div>
-    </div>
+            <div class="stat-card-big syp">
+                <div class="stat-balance-container">
+                    <span class="stat-balance" id="custBalSYP">0</span>
+                    <span class="stat-currency">ل.س</span>
+                </div>
+                <div class="stat-line"><span class="stat-line-label">💰 إيداع</span><span class="stat-line-value dep" id="custDepSYP">0</span></div>
+                <div class="stat-line"><span class="stat-line-label">💸 سحب</span><span class="stat-line-value wd" id="custWdSYP">0</span></div>
+            </div>
+            <div class="stat-card-big usd">
+                <div class="stat-balance-container">
+                    <span class="stat-balance" id="custBalUSD">0</span>
+                    <span class="stat-currency">$</span>
+                </div>
+                <div class="stat-line"><span class="stat-line-label">💰 إيداع</span><span class="stat-line-value dep" id="custDepUSD">0</span></div>
+                <div class="stat-line"><span class="stat-line-label">💸 سحب</span><span class="stat-line-value wd" id="custWdUSD">0</span></div>
+            </div>
         </div>
         <div id="custMetaBox" style="margin-bottom:14px;"></div>
         <div class="section-title"><h2>📋 سجل الحركات</h2><span class="sub" id="custTxCount">—</span></div>
@@ -1051,7 +1040,6 @@ body.no-bottom-nav .toast { bottom: 24px; }
                     </select>
                 </div>
                 <div class="form-group"><label for="inputName">الاسم <span class="required">*</span></label><input type="text" id="inputName" required></div>
-                
                 <div class="form-group"><label for="inputNotes">ملاحظات (اختياري)</label><textarea id="inputNotes" rows="3"></textarea></div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" data-close="modalCustomer">إلغاء</button>
@@ -1074,7 +1062,6 @@ body.no-bottom-nav .toast { bottom: 24px; }
         </div>
         <div class="modal-body">
             <form id="formTransaction" autocomplete="off">
-                <!-- الوضع العادي -->
                 <div id="txFormNormal">
                     <input type="hidden" id="inputTxId">
                     <input type="hidden" id="inputTxType" value="deposit">
@@ -1108,19 +1095,20 @@ body.no-bottom-nav .toast { bottom: 24px; }
                         <select id="inputRecipient"></select>
                     </div>
 
-               <div class="form-group amount-grid">
-    <div>
-        <label for="inputAmount">المبلغ <span class="required">*</span></label>
-        <input type="number" id="inputAmount" required min="0.01" step="0.01" inputmode="decimal">
-    </div>
-    <div>
-        <label for="inputCurrency" style="opacity: 0;">العملة</label>
-        <select id="inputCurrency" style="font-weight: 800; color: var(--primary); text-align: center; padding: 11px 5px;">
-            <option value="SYP">ل.س</option>
-            <option value="USD">$</option>
-        </select>
-    </div>
-</div>
+                    <div class="form-group amount-grid">
+                        <div>
+                            <label for="inputAmount">المبلغ <span class="required">*</span></label>
+                            <input type="number" id="inputAmount" required min="0.01" step="0.01" inputmode="decimal">
+                        </div>
+                        <div>
+                            <label for="inputCurrency" style="opacity: 0;">العملة</label>
+                            <select id="inputCurrency" style="font-weight: 800; color: var(--primary); text-align: center; padding: 11px 5px;">
+                                <option value="SYP">ل.س</option>
+                                <option value="USD">$</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group" style="margin-bottom:12px;">
                         <label for="inputTxNotes">ملاحظات</label>
                         <textarea id="inputTxNotes" rows="2"></textarea>
@@ -1137,7 +1125,6 @@ body.no-bottom-nav .toast { bottom: 24px; }
                     </div>
                 </div>
 
-                <!-- وضع إدارة المستلمين -->
                 <div id="txRecipientManager" style="display:none;">
                     <p style="font-size:12.5px; color:var(--text-soft); margin-bottom:14px; text-align:center;">أول اسم في القائمة هو المستلم الافتراضي</p>
                     <div style="display:flex; gap:8px; margin-bottom:16px;">
@@ -1211,7 +1198,7 @@ body.no-bottom-nav .toast { bottom: 24px; }
                 <div style="font-size:64px; line-height:1; margin-bottom:10px;">🏦</div>
                 <h3 style="font-size:22px; font-weight:900; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">الأمانات</h3>
                 <p style="font-size:13px; color:var(--text-soft); margin-top:4px;">نظام إدارة الودائع والنزلاء</p>
-                <div style="display:inline-block; margin-top:8px; background:var(--primary-light); color:var(--primary); padding:4px 12px; border-radius:9999px; font-size:11px; font-weight:800;">الإصدار 3.0</div>
+                <div style="display:inline-block; margin-top:8px; background:var(--primary-light); color:var(--primary); padding:4px 12px; border-radius:9999px; font-size:11px; font-weight:800;">الإصدار 3.1</div>
             </div>
             <div style="height:1px; background:var(--border-soft); margin:16px 0;"></div>
             <div style="font-size:12px; color:var(--text-soft); font-weight:700; margin-bottom:10px; text-align:center;">للاستفسار والدعم الفني</div>
@@ -1224,6 +1211,18 @@ body.no-bottom-nav .toast { bottom: 24px; }
             <div style="height:1px; background:var(--border-soft); margin:16px 0;"></div>
             <div style="text-align:center; font-size:11px; color:var(--text-light); line-height:1.8;">© 2026 جميع الحقوق محفوظة<br>صُنع بـ ❤️ للاستخدام الشخصي</div>
         </div>
+    </div>
+</div>
+
+<!-- شاشة الحماية -->
+<div id="lockScreen" class="lock-screen" style="display: none;">
+    <div class="lock-box">
+        <div class="lock-icon">🔒</div>
+        <h2>الأمانات</h2>
+        <p>أدخل رمز المرور للمتابعة</p>
+        <input type="password" id="lockInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off">
+        <button class="btn btn-primary btn-block" id="btnUnlock" style="margin-top: 15px;">دخول</button>
+        <button id="btnForgotPin" style="background:none; border:none; color:var(--text-light); font-size:11px; margin-top:15px; text-decoration:underline; font-family:inherit;">نسيت الرمز؟ (مسح البيانات)</button>
     </div>
 </div>
 
@@ -1243,9 +1242,6 @@ body.no-bottom-nav .toast { bottom: 24px; }
 <script>
 const App = (() => {
 
-/* =========================================================
-   1) Dialog
-   ========================================================= */
 const Dialog = (() => {
     function _show(options) {
         return new Promise(resolve => {
@@ -1314,9 +1310,6 @@ const Dialog = (() => {
     };
 })();
 
-/* =========================================================
-   2) IndexedDB
-   ========================================================= */
 const IDB = (() => {
     const DB_NAME = 'amanat_db', STORE_NAME = 'keyval', VERSION = 1;
     let _dbPromise = null;
@@ -1352,9 +1345,6 @@ const IDB = (() => {
     return { getItem, setItem };
 })();
 
-/* =========================================================
-   3) DB
-   ========================================================= */
 const DB = (() => {
     const STORE = { customers: [], transactions: [], archive: [], recipientsDeposit: [], recipientsWithdraw: [], settings: { darkMode: false, statsHidden: true } };
     let _ready = false; const _readyCallbacks = [];
@@ -1500,9 +1490,6 @@ const DB = (() => {
     };
 })();
 
-/* =========================================================
-   4) Helpers
-   ========================================================= */
 function formatNumber(n) { if (n === 0 || n === '0') return '0'; return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n); }
 function formatDate(iso) { const d = new Date(iso); if (isNaN(d)) return ''; return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
 function todayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -1518,9 +1505,6 @@ function buildTxDateISO(dateStr) {
     return new Date(dateStr + 'T' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0')).toISOString();
 }
 
-/* =========================================================
-   5) State
-   ========================================================= */
 let currentCustomerId = null, previousView = 'viewToday', currentView = 'viewToday';
 let currentSearch = '', currentSort = 'الكل', currentArchiveTab = 'نقل';
 let selectedTxCustomerId = null, selectedArchiveCustomerId = null;
@@ -1528,9 +1512,6 @@ let statsHidden = true, currentMonth = todayISO().slice(0,7), selectedDate = tod
 let currentRecipientType = 'deposit', _prevRecipientValue = '';
 const SORT_OPTIONS = ['م0','م1','م2','م3','م4','م5','م6','م7','م8'];
 
-/* =========================================================
-   6) Navigation
-   ========================================================= */
 function switchView(viewName) {
     const viewMap = { 'today': 'viewToday', 'customers': 'viewCustomers', 'month': 'viewMonth', 'customer': 'viewCustomer', 'archive': 'viewArchive', 'reports': 'viewReports' };
     const id = viewMap[viewName]; if (!id) return;
@@ -1547,9 +1528,6 @@ function switchView(viewName) {
 function goHome() { currentCustomerId = null; history.replaceState(null, '', location.pathname); switchView('today'); }
 function switchToReports() { switchView('reports'); }
 
-/* =========================================================
-   7) Dashboard
-   ========================================================= */
 function renderDashboard() {
     const totals = DB.getTotalBalances(); document.getElementById('boxSYP').textContent = formatNumber(totals.SYP); document.getElementById('boxUSD').textContent = formatNumber(totals.USD);
     const today = DB.getPeriodSummary('today'); document.getElementById('todayDate').textContent = formatDate(new Date().toISOString());
@@ -1565,43 +1543,56 @@ function toggleStatsPanel() {
     const s = DB.getSettings(); s.statsHidden = statsHidden; DB.saveSettings(s);
 }
 
-/* =========================================================
-   8) Today
-   ========================================================= */
 function renderToday() {
     const isToday = selectedDate === todayISO(); document.getElementById('todayTitle').textContent = isToday ? '📅 الحركة اليومية' : `📅 حركة يوم ${formatDate(selectedDate + 'T00:00:00')}`;
     const txs = DB.getTransactionsByDate(selectedDate); document.getElementById('todayTxCount').textContent = txs.length ? `(${txs.length} حركة)` : '';
     const listEl = document.getElementById('todayList'), emptyEl = document.getElementById('todayEmpty');
     if (txs.length === 0) { listEl.innerHTML = ''; emptyEl.style.display = 'block'; return; }
     emptyEl.style.display = 'none';
+    
     listEl.innerHTML = txs.map(t => {
-        const c = DB.getCustomer(t.customer_id); const name = c ? c.name : '⚠️ (محذوف)'; const isDep = t.type === 'deposit';
-        const curLabel = t.currency === 'SYP' ? 'ل.س' : '$'; const sign = isDep ? '+' : '−';
+        const c = DB.getCustomer(t.customer_id); 
+        const name = c ? c.name : '⚠️ (محذوف)'; 
+        const isDep = t.type === 'deposit';
+        const curLabel = t.currency === 'SYP' ? 'ل.س' : '$'; 
+        const sign = isDep ? '+' : '−';
+        const icon = isDep ? '💰' : '💸';
+
         return `
             <div class="expandable-card" data-tx-id="${t.id}">
-                <div class="card-summary ${isDep ? 'deposit' : 'withdraw'}">
+                <div class="card-summary ${isDep ? 'deposit' : 'withdraw'}" style="padding: 14px 16px;">
                     <div class="card-summary-info">
-                        <div class="card-summary-title">${isDep ? '💰 إيداع' : '💸 سحب'} — ${esc(name)}</div>
-                        <div class="card-summary-sub"><span>🕐 ${formatDate(t.date)}</span>${isDep && t.depositor_name ? `<span>👤 ${esc(t.depositor_name)}</span>` : ''}${t.recipient ? `<span>📬 ${esc(t.recipient)}</span>` : ''}</div>
+                        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="display:flex; align-items:center; gap:6px;">👤 ${esc(name)}</span>
+                            <span style="font-size:16px; font-weight:900; color:${isDep ? 'var(--success)' : 'var(--danger)'}; direction:ltr;">
+                                ${sign} ${curLabel} ${formatNumber(t.amount)}
+                            </span>
+                        </div>
+                        <div class="card-sub-item" style="justify-content:space-between; font-size:12px;">
+                            <span style="color:${isDep ? 'var(--success-dark)' : 'var(--danger-dark)'}; font-weight:700;">${icon} ${isDep ? 'إيداع' : 'سحب'}</span>
+                            <span>📅 ${formatDate(t.date)}</span>
+                        </div>
                     </div>
-                    <div class="card-summary-amount ${isDep ? 'deposit' : 'withdraw'}">${sign} ${curLabel} ${formatNumber(t.amount)}</div>
-                    <span class="card-summary-arrow">▼</span>
+                    <span class="card-summary-arrow" style="margin-right: 10px;">▼</span>
                 </div>
-                <div class="card-details"><div class="card-details-inner">
-                    <div class="detail-row"><span class="detail-label">العملة</span><span class="detail-value">${t.currency === 'SYP' ? 'ليرة سورية' : 'دولار أمريكي'}</span></div>
-                    ${isDep && t.depositor_name ? `<div class="detail-row"><span class="detail-label">المودع</span><span class="detail-value">${esc(t.depositor_name)}</span></div>` : ''}
-                    ${t.invoice ? `<div class="detail-row"><span class="detail-label">رقم الفاتورة</span><span class="detail-value">${esc(t.invoice)}</span></div>` : ''}
-                    ${t.recipient ? `<div class="detail-row"><span class="detail-label">المستلم</span><span class="detail-value">${esc(t.recipient)}</span></div>` : ''}
-                    <div class="detail-row"><span class="detail-label">التاريخ</span><span class="detail-value">${formatDate(t.date)}</span></div>
-                    ${t.notes ? `<div class="detail-row"><span class="detail-label">ملاحظات</span><span class="detail-value">${esc(t.notes)}</span></div>` : ''}
-                    <div class="card-actions" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
-                        <button class="btn btn-primary" data-action="customer" data-cid="${t.customer_id}" title="فتح ملف النزيل" style="padding:12px; font-size:18px; min-width:auto;">👤</button>
-                        <button class="btn btn-secondary" data-action="edit" data-txid="${t.id}" title="تعديل" style="padding:12px; font-size:18px; min-width:auto;">✏️</button>
-                        <button class="btn btn-danger" data-action="delete" data-txid="${t.id}" title="حذف" style="padding:12px; font-size:18px; min-width:auto;">🗑️</button>
+                <div class="card-details">
+                    <div class="card-details-inner">
+                        ${t.depositor_name ? `<div class="detail-row"><span class="detail-label">المودع</span><span class="detail-value">${esc(t.depositor_name)}</span></div>` : ''}
+                        ${t.invoice ? `<div class="detail-row"><span class="detail-label">رقم الفاتورة</span><span class="detail-value">${esc(t.invoice)}</span></div>` : ''}
+                        ${t.recipient ? `<div class="detail-row"><span class="detail-label">المستلم</span><span class="detail-value">${esc(t.recipient)}</span></div>` : ''}
+                        ${t.notes ? `<div class="detail-row"><span class="detail-label">ملاحظات</span><span class="detail-value">${esc(t.notes)}</span></div>` : ''}
+                        ${(!t.depositor_name && !t.invoice && !t.recipient && !t.notes) ? `<div style="text-align:center; color:var(--text-light); font-size:12px; padding:10px;">لا توجد تفاصيل إضافية</div>` : ''}
+                        
+                        <div class="card-actions" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top: 15px;">
+                            <button class="btn btn-primary" data-action="customer" data-cid="${t.customer_id}" title="فتح ملف النزيل" style="padding:12px; font-size:18px;">👤</button>
+                            <button class="btn btn-secondary" data-action="edit" data-txid="${t.id}" title="تعديل" style="padding:12px; font-size:18px;">✏️</button>
+                            <button class="btn btn-danger" data-action="delete" data-txid="${t.id}" title="حذف" style="padding:12px; font-size:18px;">🗑️</button>
+                        </div>
                     </div>
-                </div></div>
+                </div>
             </div>`;
     }).join('');
+
     bindExpandableCards(listEl); bindTodayActions(listEl);
 }
 function bindExpandableCards(container) {
@@ -1624,9 +1615,6 @@ function bindTodayActions(container) {
     });
 }
 
-/* =========================================================
-   9) Customers
-   ========================================================= */
 function renderSortChips() {
     const customers = DB.getCustomers(); const container = document.getElementById('sortChips');
     const counts = { 'الكل': customers.length }; SORT_OPTIONS.forEach(s => counts[s] = 0);
@@ -1640,7 +1628,7 @@ function renderSortChips() {
 function renderCustomers() {
     let list = DB.getCustomers();
     if (currentSort !== 'الكل') { if (currentSort === 'م0') list = list.filter(c => !c.sort || c.sort === 'م0'); else list = list.filter(c => c.sort === currentSort); }
-    if (currentSearch) { const q = currentSearch.toLowerCase(); list = list.filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))); }
+    if (currentSearch) { const q = currentSearch.toLowerCase(); list = list.filter(c => c.name.toLowerCase().includes(q)); }
     list.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
     const listEl = document.getElementById('customersList'), emptyEl = document.getElementById('customersEmpty');
     if (list.length === 0) {
@@ -1665,9 +1653,6 @@ function renderCustomers() {
     listEl.querySelectorAll('.expandable-card').forEach(card => { card.addEventListener('click', () => openCustomer(card.dataset.cid)); });
 }
 
-/* =========================================================
-   10) Month
-   ========================================================= */
 function renderMonthSelect() {
     const sel = document.getElementById('monthSelect'); const txs = DB.getTransactions();
     const months = new Set([todayISO().slice(0,7)]);
@@ -1722,9 +1707,6 @@ function renderMonth() {
     listEl.querySelectorAll('[data-action="open"]').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); openCustomer(btn.dataset.cid); }); });
 }
 
-/* =========================================================
-   11) Customer Page
-   ========================================================= */
 function openCustomer(id) {
     const c = DB.getCustomer(id); if (!c) { toast('النزيل غير موجود', 'error'); return; }
     previousView = currentView === 'customer' ? previousView : currentView;
@@ -1740,7 +1722,6 @@ function renderCustomerView() {
     document.getElementById('custDepSYP').textContent = formatNumber(t.depSYP); document.getElementById('custDepUSD').textContent = formatNumber(t.depUSD);
     document.getElementById('custWdSYP').textContent = formatNumber(t.wdSYP); document.getElementById('custWdUSD').textContent = formatNumber(t.wdUSD);
     const metaBox = document.getElementById('custMetaBox'); let metaHTML = '';
-    
     if (c.notes) metaHTML += `<div class="detail-row" style="background:var(--border-soft); padding:10px; border-radius:8px; border:none;"><span class="detail-label">📝 ملاحظات</span><span class="detail-value">${esc(c.notes)}</span></div>`;
     metaBox.innerHTML = metaHTML; renderCustomerTransactions();
 }
@@ -1787,18 +1768,28 @@ function renderCustomerTransactions() {
     });
 }
 
-/* =========================================================
-   12) Customer Modal
-   ========================================================= */
 function openCustomerModal(customer = null) {
-    const titleEl = document.getElementById('modalCustomerTitle'), idEl = document.getElementById('inputCustomerId'), sortEl = document.getElementById('inputSort'), nameEl = document.getElementById('inputName'), phoneEl = document.getElementById('inputPhone'), notesEl = document.getElementById('inputNotes');
+    const titleEl = document.getElementById('modalCustomerTitle');
+    const idEl = document.getElementById('inputCustomerId');
+    const sortEl = document.getElementById('inputSort');
+    const nameEl = document.getElementById('inputName');
+    const notesEl = document.getElementById('inputNotes');
+
     if (customer) {
-        titleEl.textContent = 'تعديل بيانات النزيل'; idEl.value = customer.id; sortEl.value = customer.sort || 'م0';
-        nameEl.value = customer.name; phoneEl.value = customer.phone || ''; notesEl.value = customer.notes || '';
+        titleEl.textContent = 'تعديل بيانات النزيل';
+        idEl.value = customer.id;
+        sortEl.value = customer.sort || 'م0';
+        nameEl.value = customer.name || '';
+        notesEl.value = customer.notes || '';
     } else {
-        titleEl.textContent = 'إضافة نزيل جديد'; idEl.value = ''; sortEl.value = 'م0'; nameEl.value = '';  notesEl.value = '';
+        titleEl.textContent = 'إضافة نزيل جديد';
+        idEl.value = '';
+        sortEl.value = 'م0';
+        nameEl.value = '';
+        notesEl.value = '';
     }
-    openModal('modalCustomer'); setTimeout(() => sortEl.focus(), 150);
+    openModal('modalCustomer');
+    setTimeout(() => sortEl.focus(), 150);
 }
 async function submitCustomer(e) {
     e.preventDefault();
@@ -1815,9 +1806,6 @@ async function submitCustomer(e) {
     if (currentView === 'customer' && currentCustomerId === id) renderCustomerView();
 }
 
-/* =========================================================
-   13) Recipients
-   ========================================================= */
 function populateRecipientDropdown(type, selected) {
     const sel = document.getElementById('inputRecipient'); const list = DB.getRecipients(type); currentRecipientType = type;
     if (list.length === 0) {
@@ -1865,17 +1853,10 @@ function backToTransactionForm() {
     if (!list.includes(target)) target = list[0] || ''; populateRecipientDropdown(currentRecipientType, target);
 }
 
-/* =========================================================
-   14) Transaction Modal (Redesigned)
-   ========================================================= */
 function openTransactionModal({ type = 'deposit', editId = null, customerId = null } = {}) {
     selectedTxCustomerId = customerId || null;
-
-    // إخفاء شاشة إدارة المستلمين وإظهار الشاشة العادية
     document.getElementById('txFormNormal').style.display = 'block';
     document.getElementById('txRecipientManager').style.display = 'none';
-    
-    // إظهار العنوان الفرعي (لأننا قد نكون عدلناه في شاشة الإدارة)
     const subEl = document.getElementById('modalTxSubtitle');
     if (subEl) subEl.style.display = 'block';
 
@@ -1897,18 +1878,12 @@ function openTransactionModal({ type = 'deposit', editId = null, customerId = nu
     titleEl.textContent = editing ? 'تعديل الحركة' : (type === 'deposit' ? 'إضافة إيداع' : 'إضافة سحب');
     if (subEl) subEl.textContent = type === 'deposit' ? 'استلام أمانات' : 'صرف فاتورة';
 
-    // تمييز بصري
     if (type === 'deposit') {
-        headerEl.style.background = 'var(--success-light)';
-        headerEl.style.borderBottomColor = 'var(--success)';
-        titleEl.style.color = 'var(--success-dark)';
+        headerEl.style.background = 'var(--success-light)'; headerEl.style.borderBottomColor = 'var(--success)'; titleEl.style.color = 'var(--success-dark)';
     } else {
-        headerEl.style.background = 'var(--danger-light)';
-        headerEl.style.borderBottomColor = 'var(--danger)';
-        titleEl.style.color = 'var(--danger-dark)';
+        headerEl.style.background = 'var(--danger-light)'; headerEl.style.borderBottomColor = 'var(--danger)'; titleEl.style.color = 'var(--danger-dark)';
     }
 
-    // إظهار وإخفاء الحقول
     document.getElementById('groupDepositor').style.display = type === 'deposit' ? 'block' : 'none';
     document.getElementById('groupInvoice').style.display = 'block';
     
@@ -1973,7 +1948,7 @@ function showSelectedCustomer(customerId) {
 }
 function searchTxCustomer(query) {
     const resultsEl = document.getElementById('txCustomerResults'); if (!query.trim()) { resultsEl.innerHTML = ''; return; }
-    const q = query.toLowerCase(); const list = DB.getCustomers().filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))).slice(0, 15);
+    const q = query.toLowerCase(); const list = DB.getCustomers().filter(c => c.name.toLowerCase().includes(q)).slice(0, 15);
     if (list.length === 0) { resultsEl.innerHTML = '<div style="text-align:center; padding:10px; color:var(--text-light); font-size:13px;">لا نتائج</div>'; return; }
     resultsEl.innerHTML = list.map(c => `<div class="search-result-item" data-cid="${c.id}"><div><div class="search-result-name">${esc(c.name)}</div></div>${c.sort ? `<span class="tag-sort">${esc(c.sort)}</span>` : ''}</div>`).join('');
     resultsEl.querySelectorAll('.search-result-item').forEach(item => { item.addEventListener('click', () => showSelectedCustomer(item.dataset.cid)); });
@@ -2027,9 +2002,6 @@ async function deleteTxFromModal() {
     if (currentView === 'customer') renderCustomerView();
 }
 
-/* =========================================================
-   15) Archive
-   ========================================================= */
 function openArchiveModal() {
     document.getElementById('formArchive').reset(); document.getElementById('archiveCustomerId').value = '';
     document.getElementById('archiveCustomerResults').innerHTML = ''; document.getElementById('groupTransferTo').style.display = 'none';
@@ -2044,7 +2016,7 @@ function resetArchivePicker() {
 }
 function searchArchiveCustomer(query) {
     const resultsEl = document.getElementById('archiveCustomerResults'); if (!query.trim()) { resultsEl.innerHTML = ''; return; }
-    const q = query.toLowerCase(); const list = DB.getCustomers().filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))).slice(0, 15);
+    const q = query.toLowerCase(); const list = DB.getCustomers().filter(c => c.name.toLowerCase().includes(q)).slice(0, 15);
     if (list.length === 0) { resultsEl.innerHTML = '<div style="text-align:center; padding:10px; color:var(--text-light); font-size:13px;">لا نتائج</div>'; return; }
     resultsEl.innerHTML = list.map(c => `<div class="search-result-item" data-cid="${c.id}"><div><div class="search-result-name">${esc(c.name)}</div></div>${c.sort ? `<span class="tag-sort">${esc(c.sort)}</span>` : ''}</div>`).join('');
     resultsEl.querySelectorAll('.search-result-item').forEach(item => { item.addEventListener('click', () => selectArchiveCustomer(item.dataset.cid)); });
@@ -2143,14 +2115,18 @@ async function deleteArchiveEntry(archiveId) {
     if (ok) { DB.removeFromArchive(archiveId); toast('تم حذف السجل', 'success'); renderArchive(); }
 }
 
-/* =========================================================
-   16) Print
-   ========================================================= */
 function printCustomer(customerId) {
-    const c = customerId ? DB.getCustomer(customerId) : DB.getCustomer(currentCustomerId); if (!c) return;
-    const t = DB.getCustomerTotals(c.id); const txs = DB.getCustomerTransactions(c.id);
+    const c = customerId ? DB.getCustomer(customerId) : DB.getCustomer(currentCustomerId); 
+    if (!c) { toast('النزيل غير موجود', 'error'); return; }
+    
+    const t = DB.getCustomerTotals(c.id); 
+    const txs = DB.getCustomerTransactions(c.id);
+    
     let rows = txs.map(x => {
-        const isDep = x.type === 'deposit'; const color = isDep ? '#10b981' : '#ef4444'; const sign = isDep ? '+' : '−'; const cur = x.currency === 'SYP' ? 'ل.س' : '$';
+        const isDep = x.type === 'deposit'; 
+        const color = isDep ? '#10b981' : '#ef4444'; 
+        const sign = isDep ? '+' : '−'; 
+        const cur = x.currency === 'SYP' ? 'ل.س' : '$';
         return `<tr style="border-bottom:1px solid #e5e7eb;">
             <td style="padding:6px 4px; text-align:center; font-size:11px;">${formatDate(x.date)}</td>
             <td style="padding:6px 4px; text-align:center; color:${color}; font-weight:700; font-size:11px;">${isDep?'إيداع':'سحب'}</td>
@@ -2159,38 +2135,57 @@ function printCustomer(customerId) {
             <td style="padding:6px 4px; text-align:center; font-size:10.5px;">${esc(x.depositor_name || '—')}</td>
             <td style="padding:6px 4px; text-align:center; font-size:10.5px;">${esc(x.invoice || '—')}</td>
             <td style="padding:6px 4px; text-align:center; font-size:10.5px;">${esc(x.recipient || '—')}</td>
-            <td style="padding:6px 4px; text-align:center; font-size:10.5px; color:#6b7280;">${esc(x.notes || '—')}</td>
         </tr>`;
     }).join('');
-    if (!rows) rows = `<tr><td colspan="8" style="padding:20px; text-align:center; color:#6b7280; font-size:11px;">لا توجد حركات</td></tr>`;
-    document.getElementById('print-container').innerHTML = `
-        <div style="text-align:center; margin-bottom:16px; border-bottom:3px solid #f37021; padding-bottom:10px;">
-            <h1 style="color:#f37021; margin:0; font-size:22px;">🏦 الأمانات</h1>
-            <p style="color:#6b7280; margin:4px 0 0; font-size:11px;">نظام إدارة النزلاء</p>
-        </div>
-        <div style="background:#fff3ec; padding:12px; border-radius:8px; margin-bottom:10px;">
-            <h2 style="margin:0 0 5px; font-size:17px;">${esc(c.name)}${c.sort ? `<span style="font-size:12px; color:#f37021;">(${esc(c.sort)})</span>` : ''}</h2>
-            
-            ${c.notes ? `<p style="margin:2px 0; color:#6b7280; font-size:11px;">📝 ${esc(c.notes)}</p>` : ''}
-        </div>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
-            <tr>
-                <td style="width:50%; padding:0 4px 0 0; vertical-align:top;"><div style="background:#fff3ec; padding:10px; border-radius:8px; text-align:center;"><div style="color:#6b7280; font-size:11px; margin-bottom:3px;">ل.س رصيد الليرة</div><div style="color:#f37021; font-size:18px; font-weight:900; direction:ltr;">${formatNumber(t.balSYP)}</div><div style="font-size:10px; color:#6b7280; margin-top:4px;">إيداع: ${formatNumber(t.depSYP)} | سحب: ${formatNumber(t.wdSYP)}</div></div></td>
-                <td style="width:50%; padding:0 0 0 4px; vertical-align:top;"><div style="background:#ecfdf5; padding:10px; border-radius:8px; text-align:center;"><div style="color:#6b7280; font-size:11px; margin-bottom:3px;">$ رصيد الدولار</div><div style="color:#10b981; font-size:18px; font-weight:900; direction:ltr;">${formatNumber(t.balUSD)}</div><div style="font-size:10px; color:#6b7280; margin-top:4px;">إيداع: ${formatNumber(t.depUSD)} | سحب: ${formatNumber(t.wdUSD)}</div></div></td>
-            </tr>
-        </table>
-        <h3 style="margin:0 0 8px; font-size:14px;">📋 سجل الحركات (${txs.length})</h3>
-        <table style="width:100%; border-collapse:collapse; font-size:11px; border:1px solid #e5e7eb;">
-            <thead><tr style="background:#f5f5f5;"><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">التاريخ</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">النوع</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">العملة</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">المبلغ</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">المودع</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">الفاتورة</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">المستلم</th><th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">ملاحظات</th></tr></thead>
-            <tbody>${rows}</tbody>
-        </table>
-        <div style="margin-top:14px; text-align:center; color:#6b7280; font-size:10px; border-top:1px solid #e5e7eb; padding-top:8px;">تم إنشاء التقرير بتاريخ ${formatDate(new Date().toISOString())}</div>`;
-    setTimeout(() => { window.print(); }, 200);
+    
+    if (!rows) rows = `<tr><td colspan="7" style="padding:20px; text-align:center; color:#6b7280; font-size:11px;">لا توجد حركات</td></tr>`;
+    
+    const htmlContent = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طباعة - ${esc(c.name)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Cairo', sans-serif; padding: 15px; direction: rtl; color: #1f2937; margin: 0; background: #fff; }
+    @media print { body { padding: 0; } @page { size: A4 portrait; margin: 12mm 10mm; } .no-print { display: none !important; } }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; border: 1px solid #e5e7eb; }
+    th { padding: 6px 4px; border-bottom: 2px solid #f37021; background: #f5f5f5; }
+    .print-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #f37021; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(243,112,33,0.4); font-family: 'Cairo', sans-serif; cursor: pointer; z-index: 1000; }
+</style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ اضغط هنا للطباعة</button>
+    
+    <div style="text-align:center; margin-bottom:16px; border-bottom:3px solid #f37021; padding-bottom:10px;">
+        <h1 style="color:#f37021; margin:0; font-size:22px;">🏦 الأمانات</h1>
+    </div>
+    <div style="background:#fff3ec; padding:12px; border-radius:8px; margin-bottom:10px;">
+        <h2 style="margin:0 0 5px; font-size:17px;">${esc(c.name)}${c.sort ? ` <span style="font-size:12px; color:#f37021;">(${esc(c.sort)})</span>` : ''}</h2>
+    </div>
+    <table style="margin-bottom:12px; border:none;">
+        <tr>
+            <td style="width:50%; padding:0 4px 0 0; border:none;"><div style="background:#fff3ec; padding:10px; border-radius:8px; text-align:center;"><div style="color:#6b7280; font-size:11px;">ل.س رصيد الليرة</div><div style="color:#f37021; font-size:18px; font-weight:900; direction:ltr;">${formatNumber(t.balSYP)}</div></div></td>
+            <td style="width:50%; padding:0 0 0 4px; border:none;"><div style="background:#ecfdf5; padding:10px; border-radius:8px; text-align:center;"><div style="color:#6b7280; font-size:11px;">$ رصيد الدولار</div><div style="color:#10b981; font-size:18px; font-weight:900; direction:ltr;">${formatNumber(t.balUSD)}</div></div></td>
+        </tr>
+    </table>
+    <table>
+        <thead><tr><th>التاريخ</th><th>النوع</th><th>العملة</th><th>المبلغ</th><th>المودع</th><th>الفاتورة</th><th>المستلم</th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, '_blank');
+    
+    if (!w) {
+        toast('المتصفح منع فتح النافذة. اسمح بالنوافذ المنبثقة.', 'error');
+    }
 }
 
-/* =========================================================
-   17) Backup / Restore
-   ========================================================= */
 function backup() {
     const data = { version: 3, exported_at: new Date().toISOString(), customers: DB.getCustomers(), transactions: DB.getTransactions(), archive: DB.getArchive(), recipientsDeposit: DB.getRecipients('deposit'), recipientsWithdraw: DB.getRecipients('withdraw'), settings: DB.getSettings() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2212,9 +2207,6 @@ async function handleImport(e) {
     reader.readAsText(file); e.target.value = '';
 }
 
-/* =========================================================
-   18) Dark Mode / Drawer
-   ========================================================= */
 function toggleDarkMode() {
     const s = DB.getSettings(); s.darkMode = !s.darkMode; DB.saveSettings(s); applyDarkMode(s.darkMode); updateDrawerDarkItem(s.darkMode); toast(s.darkMode ? 'الوضع الليلي 🌙' : 'الوضع النهاري ☀️');
 }
@@ -2223,9 +2215,6 @@ function updateDrawerDarkItem(enabled) { document.getElementById('drawerDarkIcon
 function openDrawer() { document.getElementById('drawer').classList.add('show'); document.getElementById('drawerOverlay').classList.add('show'); }
 function closeDrawer() { document.getElementById('drawer').classList.remove('show'); document.getElementById('drawerOverlay').classList.remove('show'); }
 
-/* =========================================================
-   19) Reports
-   ========================================================= */
 let currentReportType = null, currentReportData = null, selectedReportCustomers = [];
 function openReport(type) {
     currentReportType = type; selectedReportCustomers = [];
@@ -2385,9 +2374,6 @@ function renderArchiveReport(reason) {
     showReportPreview({ title: reason === 'نقل' ? '📦 قائمة المنقولين' : '🚪 قائمة المخلّين', subtitle: `عدد: ${list.length}`, summary: [{ label: 'العدد', value: list.length, color: 'primary' }, { label: 'إجمالي ل.س', value: formatNumber(totalSYP), color: 'success' }, { label: 'إجمالي $', value: formatNumber(totalUSD), color: 'success' }], headers: reason === 'نقل' ? ['النزيل', 'الفرز', 'تاريخ النقل', 'إلى', 'رصيد ل.س', 'رصيد $'] : ['النزيل', 'الفرز', 'تاريخ الإخلاء', '—', 'رصيد ل.س', 'رصيد $'], rows });
 }
 
-/* =========================================================
-   20) Events
-   ========================================================= */
 function bindEvents() {
     document.querySelectorAll('.bottom-nav-item').forEach(btn => { 
         btn.addEventListener('click', () => switchView(btn.dataset.view)); 
@@ -2411,6 +2397,77 @@ function bindEvents() {
         });
     });
 
+// --- إعدادات نافذة الحماية ---
+document.getElementById('btnSetPin').addEventListener('click', () => {
+    closeDrawer();
+    setTimeout(() => {
+        const currentPin = localStorage.getItem('amanat_pin');
+        const toggle = document.getElementById('togglePinEnable');
+        const inputsArea = document.getElementById('pinInputsArea');
+        const oldGroup = document.getElementById('oldPinGroup');
+        
+        document.getElementById('oldPinInput').value = '';
+        document.getElementById('newPinInput').value = '';
+        
+        if (currentPin) {
+            toggle.checked = true;
+            inputsArea.style.display = 'block';
+            oldGroup.style.display = 'block';
+        } else {
+            toggle.checked = false;
+            inputsArea.style.display = 'none';
+            oldGroup.style.display = 'none';
+        }
+        document.getElementById('pinModal').classList.add('show');
+    }, 200);
+});
+
+document.getElementById('togglePinEnable').addEventListener('change', (e) => {
+    const inputsArea = document.getElementById('pinInputsArea');
+    const oldGroup = document.getElementById('oldPinGroup');
+    const currentPin = localStorage.getItem('amanat_pin');
+    
+    if (e.target.checked) {
+        inputsArea.style.display = 'block';
+        oldGroup.style.display = currentPin ? 'block' : 'none';
+    } else {
+        inputsArea.style.display = 'none';
+    }
+});
+
+document.getElementById('btnCancelPin').addEventListener('click', () => {
+    document.getElementById('pinModal').classList.remove('show');
+});
+
+document.getElementById('btnSavePin').addEventListener('click', () => {
+    const isEnabled = document.getElementById('togglePinEnable').checked;
+    const currentPin = localStorage.getItem('amanat_pin');
+    
+    if (!isEnabled) {
+        // إطفاء الحماية
+        if (currentPin) {
+            const oldPin = document.getElementById('oldPinInput').value;
+            if (oldPin !== currentPin) { toast('الرمز الحالي خاطئ', 'error'); return; }
+        }
+        localStorage.removeItem('amanat_pin');
+        toast('تم إلغاء تفعيل رمز الحماية', 'success');
+        document.getElementById('pinModal').classList.remove('show');
+        return;
+    }
+    
+    // تفعيل الحماية
+    const newPin = document.getElementById('newPinInput').value;
+    if (!/^\d{4}$/.test(newPin)) { toast('يجب أن يكون الرمز الجديد 4 أرقام', 'error'); return; }
+    
+    if (currentPin) {
+        const oldPin = document.getElementById('oldPinInput').value;
+        if (oldPin !== currentPin) { toast('الرمز الحالي خاطئ', 'error'); return; }
+    }
+    
+    localStorage.setItem('amanat_pin', newPin);
+    toast('تم حفظ رمز الحماية بنجاح 🔒', 'success');
+    document.getElementById('pinModal').classList.remove('show');
+});
     document.getElementById('searchInput').addEventListener('input', (e) => { 
         currentSearch = e.target.value.trim(); renderCustomers(); 
     });
@@ -2434,13 +2491,18 @@ function bindEvents() {
     });
     
     document.querySelectorAll('#custDropdownMenu .dropdown-item').forEach(item => {
-        item.addEventListener('click', async () => {
-            const action = item.dataset.action; dropdown.classList.remove('open');
-            const c = DB.getCustomer(currentCustomerId); if (!c) return;
+        item.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const action = item.dataset.action; 
+            dropdown.classList.remove('open');
+            const c = DB.getCustomer(currentCustomerId); 
+            if (!c) { toast('خطأ: النزيل غير موجود', 'error'); return; }
+
             if (action === 'deposit') openTransactionModal({ type: 'deposit', customerId: currentCustomerId });
             else if (action === 'withdraw') openTransactionModal({ type: 'withdraw', customerId: currentCustomerId });
             else if (action === 'edit') openCustomerModal(c);
-            else if (action === 'print') printCustomer();
+            else if (action === 'print') printCustomer(c.id);
             else if (action === 'archive') { openArchiveModal(); setTimeout(() => selectArchiveCustomer(currentCustomerId), 200); }
             else if (action === 'delete') {
                 const ok = await Dialog.confirmDanger(`سيتم حذف النزيل "${c.name}" وكل حركاته نهائياً.\n\nلا يمكن التراجع!`);
@@ -2538,33 +2600,85 @@ function switchArchiveTab(reason) {
     renderArchive();
 }
 
-/* =========================================================
-   21) Init
-   ========================================================= */
 function init() {
+    const savedPin = localStorage.getItem('amanat_pin');
+    const lockScreen = document.getElementById('lockScreen');
+    
+    if (savedPin) {
+        lockScreen.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        const unlock = () => {
+            const val = document.getElementById('lockInput').value;
+            if (val === savedPin) {
+                lockScreen.style.display = 'none';
+                document.body.style.overflow = '';
+                startAppCore();
+            } else {
+                toast('الرمز غير صحيح', 'error');
+                document.getElementById('lockInput').value = '';
+            }
+        };
+        
+        document.getElementById('btnUnlock').onclick = unlock;
+        document.getElementById('lockInput').onkeydown = (e) => { if(e.key === 'Enter') unlock(); };
+        
+        document.getElementById('btnForgotPin').onclick = async () => {
+            const ok = await Dialog.confirmDanger('سيتم مسح جميع البيانات نهائياً! هل أنت متأكد؟', 'نسيت الرمز');
+            if (ok) { localStorage.clear(); indexedDB.deleteDatabase('amanat_db'); location.reload(); }
+        };
+    } else {
+        startAppCore();
+    }
+}
+
+function startAppCore() {
     const settings = DB.getSettings(); applyDarkMode(settings.darkMode); updateDrawerDarkItem(settings.darkMode);
     statsHidden = settings.statsHidden !== false; document.getElementById('statsPanel').classList.toggle('hidden', statsHidden);
     document.getElementById('btnToggleStats').textContent = statsHidden ? '🔻' : '🔺';
     bindEvents(); renderDashboard(); renderSortChips(); renderCustomers(); renderMonth(); switchView('today');
     const hash = location.hash; const match = hash.match(/customer=([^&]+)/); if (match && DB.getCustomer(match[1])) { openCustomer(match[1]); }
-    console.log('✅ تم تحميل تطبيق الأمانات v3');
+    console.log('✅ تم تحميل تطبيق الأمانات v3.1');
 }
 
 document.addEventListener('DOMContentLoaded', () => { DB.onReady(init); });
 return { goHome, openCustomer, switchView };
 })();
 </script>
+<!-- نافذة إعدادات الحماية العصرية -->
+<div id="pinModal" class="pin-modal-overlay">
+    <div class="pin-modal">
+        <span class="pin-modal-icon">🔐</span>
+        <h3>إعدادات الحماية</h3>
+        <p>تحكم في قفل التطبيق برمز PIN</p>
+        
+        <label class="pin-toggle-wrap" for="togglePinEnable">
+            <span class="pin-toggle-label">تفعيل رمز الحماية</span>
+            <div class="pin-switch">
+                <input type="checkbox" id="togglePinEnable">
+                <span class="pin-slider"></span>
+            </div>
+        </label>
+        
+        <div id="pinInputsArea" style="display: none;">
+            <div class="pin-inputs">
+                <div class="pin-input-group" id="oldPinGroup" style="display: none;">
+                    <label>الرمز الحالي</label>
+                    <input type="password" id="oldPinInput" inputmode="numeric" maxlength="4" placeholder="••••">
+                </div>
+                <div class="pin-input-group">
+                    <label>الرمز الجديد (4 أرقام)</label>
+                    <input type="password" id="newPinInput" inputmode="numeric" maxlength="4" placeholder="••••">
+                </div>
+            </div>
+        </div>
 
-<script>
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js', { scope: './' })
-        .then(reg => console.log('✅ Service Worker مسجل:', reg.scope))
-        .catch(err => console.log('❌ فشل التسجيل:', err));
-    });
-}
-</script>
-
+        <div class="pin-actions">
+            <button type="button" class="btn btn-secondary" id="btnCancelPin">إلغاء</button>
+            <button type="button" class="btn btn-primary" id="btnSavePin">حفظ</button>
+        </div>
+    </div>
+</div>
 <div id="print-container"></div>
 </body>
 </html>
