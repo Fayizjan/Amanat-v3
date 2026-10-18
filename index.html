@@ -840,6 +840,31 @@ input:checked + .pin-slider:before { transform: translateX(20px); }
 .pin-input-group input:focus { outline: none; border-color: var(--primary); }
 .pin-input-group input:disabled { background: var(--border-soft); opacity: 0.6; cursor: not-allowed; }
 .pin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* تصميم الضغط المطول والعداد */
+.long-press-progress {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 0%;
+    background: rgba(239, 68, 68, 0.15); z-index: -1; transition: width 0.05s linear; pointer-events: none;
+}
+.drawer-item { position: relative; overflow: hidden; z-index: 1; }
+.drawer-item.pressing { color: var(--danger) !important; font-weight: 900 !important; }
+.drawer-item.pressing .drawer-item-icon { animation: pulseDanger 0.5s infinite alternate; }
+@keyframes pulseDanger { from { transform: scale(1); } to { transform: scale(1.2); } }
+
+/* تصميم نافذة الاستيراد المخصصة */
+.restore-warning {
+    background: var(--danger-light); color: var(--danger-dark);
+    padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 700;
+    margin-bottom: 16px; border: 1px solid var(--danger-soft); line-height: 1.6;
+}
+.restore-checkbox-wrap {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--bg); padding: 12px; border-radius: 8px;
+    margin-bottom: 16px; cursor: pointer; border: 1px solid var(--border);
+}
+.restore-checkbox-wrap input { width: 20px; height: 20px; accent-color: var(--danger); cursor: pointer; margin-top: 2px; }
+.restore-checkbox-wrap span { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.btn-danger:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
 </style>
 </head>
 <body>
@@ -1366,18 +1391,14 @@ const DB = (() => {
         }
     }
 
-    const _saveTimers = {};
-    function _save(key) {
-        clearTimeout(_saveTimers[key]);
-        _saveTimers[key] = setTimeout(async () => {
-            try {
-                let dbKey = 'amanat_' + key;
-                if (key === 'recipientsDeposit') dbKey = 'amanat_recipients_deposit';
-                if (key === 'recipientsWithdraw') dbKey = 'amanat_recipients_withdraw';
-                await IDB.setItem(dbKey, STORE[key]);
-            } catch (e) { console.error('فشل الحفظ:', e); }
-        }, 120);
-    }
+function _save(key) {
+    try {
+        let dbKey = 'amanat_' + key;
+        if (key === 'recipientsDeposit') dbKey = 'amanat_recipients_deposit';
+        if (key === 'recipientsWithdraw') dbKey = 'amanat_recipients_withdraw';
+        IDB.setItem(dbKey, STORE[key]).catch(e => console.error('فشل الحفظ:', e));
+    } catch (e) { console.error('فشل الحفظ:', e); }
+}
 
     function onReady(cb) { if (_ready) cb(); else _readyCallbacks.push(cb); }
     function _newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
@@ -1418,13 +1439,24 @@ const DB = (() => {
     function getBalance(customerId, currency) {
         let b = 0; for (const t of getCustomerTransactions(customerId)) { if (t.currency !== currency) continue; b += (t.type === 'deposit' ? t.amount : -t.amount); } return b;
     }
-    function getCustomerTotals(customerId) {
-        const res = { depSYP:0, depUSD:0, wdSYP:0, wdUSD:0, balSYP:0, balUSD:0 };
-        for (const t of getCustomerTransactions(customerId)) {
-            if (t.type === 'deposit') { if (t.currency === 'SYP') { res.depSYP += t.amount; res.balSYP += t.amount; } else { res.depUSD += t.amount; res.balUSD += t.amount; } }
-            else { if (t.currency === 'SYP') { res.wdSYP += t.amount; res.balSYP -= t.amount; } else { res.wdUSD += t.amount; res.balUSD -= t.amount; } }
-        } return res;
-    }
+  function getCustomerTotals(customerId) {
+    const res = { depSYP:0, depUSD:0, wdSYP:0, wdUSD:0, balSYP:0, balUSD:0 };
+    // تحسين الأداء: استخدام حلقة for بدلاً من الفلترة المتعددة
+    const txs = STORE.transactions;
+    for (let i = 0; i < txs.length; i++) {
+        const t = txs[i];
+        if (t.customer_id !== customerId) continue;
+        
+        if (t.type === 'deposit') { 
+            if (t.currency === 'SYP') { res.depSYP += t.amount; res.balSYP += t.amount; } 
+            else { res.depUSD += t.amount; res.balUSD += t.amount; } 
+        } else { 
+            if (t.currency === 'SYP') { res.wdSYP += t.amount; res.balSYP -= t.amount; } 
+            else { res.wdUSD += t.amount; res.balUSD -= t.amount; } 
+        }
+    } 
+    return res;
+}
     function getCustomerBalance(id) { return { SYP: getBalance(id,'SYP'), USD: getBalance(id,'USD') }; }
     function getTotalBalances() {
         let syp = 0, usd = 0; for (const c of STORE.customers) { syp += getBalance(c.id,'SYP'); usd += getBalance(c.id,'USD'); } return { SYP: syp, USD: usd, count: STORE.customers.length };
@@ -1433,8 +1465,23 @@ const DB = (() => {
     function _dateKey(iso) { const d = new Date(iso); if (isNaN(d)) return ''; return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function _todayKey() { return _dateKey(new Date().toISOString()); }
     function getTodayTransactions() { return getTransactionsByDate(_todayKey()); }
-    function getTransactionsByDate(dateStr) { return STORE.transactions.filter(t => _dateKey(t.date) === dateStr).sort((a, b) => new Date(b.date) - new Date(a.date)); }
-    function getMonthTransactions(yearMonth) { return STORE.transactions.filter(t => _dateKey(t.date).startsWith(yearMonth)).sort((a, b) => new Date(b.date) - new Date(a.date)); }
+  function getTransactionsByDate(dateStr) { 
+    const res = [];
+    for (let i = STORE.transactions.length - 1; i >= 0; i--) {
+        const t = STORE.transactions[i];
+        if (_dateKey(t.date) === dateStr) res.push(t);
+    }
+    return res; 
+}
+
+function getMonthTransactions(yearMonth) { 
+    const res = [];
+    for (let i = STORE.transactions.length - 1; i >= 0; i--) {
+        const t = STORE.transactions[i];
+        if (_dateKey(t.date).startsWith(yearMonth)) res.push(t);
+    }
+    return res; 
+}
     function getPeriodSummary(period) {
         const txs = period === 'today' ? getTodayTransactions() : getMonthTransactions(_todayKey().slice(0,7));
         const r = { depSYP:0, depUSD:0, wdSYP:0, wdUSD:0 };
@@ -1489,7 +1536,14 @@ const DB = (() => {
         getRecipients, addRecipient, removeRecipient, getSettings, saveSettings, importAll
     };
 })();
-
+// دالة تشفير الكلمة السرية (SHA-256)
+async function hashPin(pin) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 function formatNumber(n) { if (n === 0 || n === '0') return '0'; return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n); }
 function formatDate(iso) { const d = new Date(iso); if (isNaN(d)) return ''; return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
 function todayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -1544,13 +1598,23 @@ function toggleStatsPanel() {
 }
 
 function renderToday() {
-    const isToday = selectedDate === todayISO(); document.getElementById('todayTitle').textContent = isToday ? '📅 الحركة اليومية' : `📅 حركة يوم ${formatDate(selectedDate + 'T00:00:00')}`;
-    const txs = DB.getTransactionsByDate(selectedDate); document.getElementById('todayTxCount').textContent = txs.length ? `(${txs.length} حركة)` : '';
+    const isToday = selectedDate === todayISO(); 
+    document.getElementById('todayTitle').textContent = isToday ? '📅 الحركة اليومية' : `📅 حركة يوم ${formatDate(selectedDate + 'T00:00:00')}`;
+    
+    const txs = DB.getTransactionsByDate(selectedDate); 
+    document.getElementById('todayTxCount').textContent = txs.length ? `(${txs.length} حركة)` : '';
+    
     const listEl = document.getElementById('todayList'), emptyEl = document.getElementById('todayEmpty');
-    if (txs.length === 0) { listEl.innerHTML = ''; emptyEl.style.display = 'block'; return; }
+    if (txs.length === 0) { 
+        listEl.innerHTML = ''; 
+        emptyEl.style.display = 'block'; 
+        return; 
+    }
     emptyEl.style.display = 'none';
     
-    listEl.innerHTML = txs.map(t => {
+    let htmlContent = '';
+    for (let i = 0; i < txs.length; i++) {
+        const t = txs[i];
         const c = DB.getCustomer(t.customer_id); 
         const name = c ? c.name : '⚠️ (محذوف)'; 
         const isDep = t.type === 'deposit';
@@ -1558,7 +1622,7 @@ function renderToday() {
         const sign = isDep ? '+' : '−';
         const icon = isDep ? '💰' : '💸';
 
-        return `
+        htmlContent += `
             <div class="expandable-card" data-tx-id="${t.id}">
                 <div class="card-summary ${isDep ? 'deposit' : 'withdraw'}" style="padding: 14px 16px;">
                     <div class="card-summary-info">
@@ -1591,9 +1655,11 @@ function renderToday() {
                     </div>
                 </div>
             </div>`;
-    }).join('');
+    }
+    listEl.innerHTML = htmlContent;
 
-    bindExpandableCards(listEl); bindTodayActions(listEl);
+    bindExpandableCards(listEl); 
+    bindTodayActions(listEl);
 }
 function bindExpandableCards(container) {
     container.querySelectorAll('.expandable-card').forEach(card => {
@@ -1796,7 +1862,13 @@ async function submitCustomer(e) {
     const id = document.getElementById('inputCustomerId').value; let sort = document.getElementById('inputSort').value.trim();
     const name = document.getElementById('inputName').value.trim(), notes = document.getElementById('inputNotes').value.trim();
     if (!name) { toast('الاسم مطلوب', 'error'); return; }
-    if (!sort) sort = 'م0';
+  // التحقق من عدم تكرار الاسم
+const existingCustomer = DB.getCustomers().find(c => c.name === name && c.id !== id);
+if (existingCustomer) {
+    toast('يوجد نزيل بنفس الاسم مسبقاً! أضف تمييزاً للاسم.', 'error');
+    return;
+}
+  if (!sort) sort = 'م0';
     if (id) { DB.updateCustomer(id, { name, notes, sort }); toast('تم تحديث بيانات النزيل ✅', 'success'); }
     else { DB.addCustomer({ name, notes, sort }); toast('تم إضافة النزيل بنجاح ✅', 'success'); }
     closeModal('modalCustomer'); renderDashboard();
@@ -2187,26 +2259,52 @@ function printCustomer(customerId) {
 }
 
 function backup() {
+    localStorage.setItem('amanat_last_backup', Date.now()); // <--- أضف هذا السطر
     const data = { version: 3, exported_at: new Date().toISOString(), customers: DB.getCustomers(), transactions: DB.getTransactions(), archive: DB.getArchive(), recipientsDeposit: DB.getRecipients('deposit'), recipientsWithdraw: DB.getRecipients('withdraw'), settings: DB.getSettings() };
+    // ... باقي الكود كما هو ...
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `amanat_backup_${todayISO()}.json`; a.click(); URL.revokeObjectURL(url);
     toast('تم تصدير النسخة الاحتياطية 💾', 'success');
 }
-function restore() { document.getElementById('importFile').click(); }
+function restore() { 
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+    document.getElementById('chkConfirmRestore').checked = false;
+    document.getElementById('btnConfirmRestore').disabled = true;
+    openModal('modalRestore');
+}
+
 async function handleImport(e) {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
+    
+    // إغلاق أي نوافذ مفتوحة فوراً قبل بدء القراءة
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+    document.body.classList.remove('no-scroll'); // لضمان عدم تعليق التمرير
+
     reader.onload = async (ev) => {
         try {
-            const data = JSON.parse(ev.target.result); if (!data.customers || !data.transactions) throw new Error('ملف غير صالح');
-            const ok = await Dialog.confirm(`سيتم استبدال كل البيانات الحالية بـ:\n${data.customers.length} نزيل\n${data.transactions.length} حركة\n${(data.archive||[]).length} سجل أرشيف.\n\nهل أنت متأكد؟`, 'استيراد بيانات');
-            if (!ok) return;
-            await DB.importAll(data); toast('تم استيراد البيانات بنجاح ✅', 'success'); goHome(); renderDashboard(); renderSortChips(); renderCustomers(); renderMonth();
-        } catch (err) { Dialog.error('فشل استيراد الملف: ' + err.message, 'خطأ'); }
+            const data = JSON.parse(ev.target.result); 
+            if (!data.customers || !data.transactions) throw new Error('ملف غير صالح');
+            
+            toast('جاري استيراد البيانات...', 'success');
+            
+            await DB.importAll(data); 
+            toast('تم استيراد البيانات بنجاح ✅', 'success'); 
+            
+            // إعادة تهيئة الواجهات
+            goHome(); 
+            renderDashboard(); 
+            renderSortChips(); 
+            renderCustomers(); 
+            renderMonth();
+            
+        } catch (err) { 
+            Dialog.error('فشل استيراد الملف: ' + err.message, 'خطأ'); 
+        }
     };
-    reader.readAsText(file); e.target.value = '';
+    reader.readAsText(file); 
+    e.target.value = ''; // تفريغ الحقل لتمكين اختيار نفس الملف مرة أخرى مستقبلاً
 }
-
 function toggleDarkMode() {
     const s = DB.getSettings(); s.darkMode = !s.darkMode; DB.saveSettings(s); applyDarkMode(s.darkMode); updateDrawerDarkItem(s.darkMode); toast(s.darkMode ? 'الوضع الليلي 🌙' : 'الوضع النهاري ☀️');
 }
@@ -2382,21 +2480,78 @@ function bindEvents() {
     document.getElementById('btnToggleStats').addEventListener('click', toggleStatsPanel);
     document.getElementById('btnMenu').addEventListener('click', openDrawer);
     document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+    // --- ربط أزرار نافذة الاستيراد الجديدة ---
+document.getElementById('chkConfirmRestore').addEventListener('change', (e) => {
+    document.getElementById('btnConfirmRestore').disabled = !e.target.checked;
+});
+
+document.getElementById('btnConfirmRestore').addEventListener('click', () => {
+    // إغلاق النافذة أولاً وإعطاء المتصفح وقتاً لإغلاقها
+    closeModal('modalRestore');
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
     
-    document.querySelectorAll('.drawer-item').forEach(item => {
+    setTimeout(() => {
+        document.getElementById('importFile').click();
+    }, 350); // تأخير بسيط لضمان إغلاق النافذة قبل فتح مستعرض الملفات
+});
+  document.querySelectorAll('.drawer-item').forEach(item => {
+    const action = item.dataset.action;
+    
+    // إذا كان زر الاستيراد، نطبق عليه الضغط المطول
+    if (action === 'restore') {
+        let pressTimer;
+        let progressBar = document.createElement('div');
+        progressBar.className = 'long-press-progress';
+        item.appendChild(progressBar);
+
+        const startPress = (e) => {
+            e.preventDefault();
+            item.classList.add('pressing');
+            let width = 0;
+            progressBar.style.width = '0%';
+            
+            pressTimer = setInterval(() => {
+                width += 2; // يزيد 2% كل 40 مللي ثانية = 2 ثانية للمئة
+                progressBar.style.width = width + '%';
+                if (width >= 100) {
+                    clearInterval(pressTimer);
+                    item.classList.remove('pressing');
+                    progressBar.style.width = '0%';
+                    // اهتزاز خفيف
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    closeDrawer();
+                    setTimeout(() => restore(), 200);
+                }
+            }, 40);
+        };
+
+        const cancelPress = () => {
+            clearInterval(pressTimer);
+            item.classList.remove('pressing');
+            progressBar.style.width = '0%';
+        };
+
+        item.addEventListener('touchstart', startPress, {passive: false});
+        item.addEventListener('mousedown', startPress);
+        item.addEventListener('touchend', cancelPress);
+        item.addEventListener('touchcancel', cancelPress);
+        item.addEventListener('mouseup', cancelPress);
+        item.addEventListener('mouseleave', cancelPress);
+        
+    } else {
+        // باقي الأزرار تعمل بالضغط العادي
         item.addEventListener('click', () => {
-            const action = item.dataset.action; closeDrawer();
+            closeDrawer();
             setTimeout(() => {
                 if (action === 'new-customer') openCustomerModal();
                 else if (action === 'archive') switchView('archive');
                 else if (action === 'reports') switchToReports();
                 else if (action === 'backup') backup();
-                else if (action === 'restore') restore();
                 else if (action === 'dark-mode') toggleDarkMode();
             }, 200);
         });
-    });
-
+    }
+});
 // --- إعدادات نافذة الحماية ---
 document.getElementById('btnSetPin').addEventListener('click', () => {
     closeDrawer();
@@ -2439,15 +2594,16 @@ document.getElementById('btnCancelPin').addEventListener('click', () => {
     document.getElementById('pinModal').classList.remove('show');
 });
 
-document.getElementById('btnSavePin').addEventListener('click', () => {
+document.getElementById('btnSavePin').addEventListener('click', async () => {
     const isEnabled = document.getElementById('togglePinEnable').checked;
-    const currentPin = localStorage.getItem('amanat_pin');
+    const currentPinHash = localStorage.getItem('amanat_pin'); // نقرأ الكود المشفر المخزن
     
     if (!isEnabled) {
         // إطفاء الحماية
-        if (currentPin) {
+        if (currentPinHash) {
             const oldPin = document.getElementById('oldPinInput').value;
-            if (oldPin !== currentPin) { toast('الرمز الحالي خاطئ', 'error'); return; }
+            const oldPinHash = await hashPin(oldPin);
+            if (oldPinHash !== currentPinHash) { toast('الرمز الحالي خاطئ', 'error'); return; }
         }
         localStorage.removeItem('amanat_pin');
         toast('تم إلغاء تفعيل رمز الحماية', 'success');
@@ -2459,12 +2615,15 @@ document.getElementById('btnSavePin').addEventListener('click', () => {
     const newPin = document.getElementById('newPinInput').value;
     if (!/^\d{4}$/.test(newPin)) { toast('يجب أن يكون الرمز الجديد 4 أرقام', 'error'); return; }
     
-    if (currentPin) {
+    if (currentPinHash) {
         const oldPin = document.getElementById('oldPinInput').value;
-        if (oldPin !== currentPin) { toast('الرمز الحالي خاطئ', 'error'); return; }
+        const oldPinHash = await hashPin(oldPin);
+        if (oldPinHash !== currentPinHash) { toast('الرمز الحالي خاطئ', 'error'); return; }
     }
     
-    localStorage.setItem('amanat_pin', newPin);
+    // تشفير الرمز الجديد وحفظه
+    const newPinHash = await hashPin(newPin);
+    localStorage.setItem('amanat_pin', newPinHash);
     toast('تم حفظ رمز الحماية بنجاح 🔒', 'success');
     document.getElementById('pinModal').classList.remove('show');
 });
@@ -2601,16 +2760,17 @@ function switchArchiveTab(reason) {
 }
 
 function init() {
-    const savedPin = localStorage.getItem('amanat_pin');
+    const savedPinHash = localStorage.getItem('amanat_pin');
     const lockScreen = document.getElementById('lockScreen');
     
-    if (savedPin) {
+    if (savedPinHash) {
         lockScreen.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
-        const unlock = () => {
+        const unlock = async () => {
             const val = document.getElementById('lockInput').value;
-            if (val === savedPin) {
+            const valHash = await hashPin(val);
+            if (valHash === savedPinHash) {
                 lockScreen.style.display = 'none';
                 document.body.style.overflow = '';
                 startAppCore();
@@ -2633,11 +2793,45 @@ function init() {
 }
 
 function startAppCore() {
-    const settings = DB.getSettings(); applyDarkMode(settings.darkMode); updateDrawerDarkItem(settings.darkMode);
-    statsHidden = settings.statsHidden !== false; document.getElementById('statsPanel').classList.toggle('hidden', statsHidden);
+    // --- فحص تذكير النسخ الاحتياطي (يومياً) ---
+    const lastBackup = localStorage.getItem('amanat_last_backup');
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000; // 24 ساعة (يوم واحد)
+    
+    if (DB.getCustomers().length > 0) {
+        if (!lastBackup || (now - lastBackup > oneDay)) {
+            setTimeout(() => {
+                Dialog._show({
+                    title: '💾 تنبيه النسخ الاحتياطي',
+                    message: 'لقد مر يوم (أو أكثر) منذ آخر نسخة احتياطية.\n\nننصحك بأخذ نسخة الآن لحماية بياناتك.',
+                    type: 'warning', icon: '⚠️', 
+                    buttons: [
+                        { text: 'لاحقاً', type: 'secondary', value: false },
+                        { text: 'أخذ نسخة الآن', type: 'primary', value: true }
+                    ]
+                }).then(res => { if (res) backup(); });
+            }, 2500); // يظهر بعد ثانيتين ونصف من فتح التطبيق
+        }
+    }
+
+    // --- كود بداية التطبيق الأساسي ---
+    const settings = DB.getSettings(); 
+    applyDarkMode(settings.darkMode); 
+    updateDrawerDarkItem(settings.darkMode);
+    statsHidden = settings.statsHidden !== false; 
+    document.getElementById('statsPanel').classList.toggle('hidden', statsHidden);
     document.getElementById('btnToggleStats').textContent = statsHidden ? '🔻' : '🔺';
-    bindEvents(); renderDashboard(); renderSortChips(); renderCustomers(); renderMonth(); switchView('today');
-    const hash = location.hash; const match = hash.match(/customer=([^&]+)/); if (match && DB.getCustomer(match[1])) { openCustomer(match[1]); }
+    
+    bindEvents(); 
+    renderDashboard(); 
+    renderSortChips(); 
+    renderCustomers(); 
+    renderMonth(); 
+    switchView('today');
+    
+    const hash = location.hash; 
+    const match = hash.match(/customer=([^&]+)/); 
+    if (match && DB.getCustomer(match[1])) { openCustomer(match[1]); }
     console.log('✅ تم تحميل تطبيق الأمانات v3.1');
 }
 
@@ -2679,6 +2873,30 @@ return { goHome, openCustomer, switchView };
         </div>
     </div>
 </div>
-<div id="print-container"></div>
+<!-- نافذة استيراد النسخة الاحتياطية (المخصصة) -->
+<div class="modal-overlay" id="modalRestore">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header"><h2>📂 استيراد نسخة احتياطية</h2><button class="modal-close" data-close="modalRestore">×</button></div>
+        <div class="modal-body">
+            <div class="restore-warning">
+                ⚠️ تحذير هام جداً:<br>
+                سيتم مسح جميع البيانات الحالية (النزلاء، الحركات، الأرشيف) واستبدالها بالبيانات الموجودة في الملف الذي اخترته. لا يمكن التراجع عن هذه الخطوة!
+            </div>
+            
+            <label class="restore-checkbox-wrap">
+                <input type="checkbox" id="chkConfirmRestore">
+                <span>أقر بأنني أريد استبدال جميع البيانات الحالية وفهمت أن هذه العملية لا يمكن التراجع عنها.</span>
+            </label>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" data-close="modalRestore">إلغاء</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmRestore" disabled>استبدال البيانات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="importFile" accept=".json" style="display:none;">
+  <div id="print-container"></div>
 </body>
 </html>
