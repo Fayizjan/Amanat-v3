@@ -864,7 +864,314 @@ input:checked + .pin-slider:before { transform: translateX(20px); }
 .restore-checkbox-wrap input { width: 20px; height: 20px; accent-color: var(--danger); cursor: pointer; margin-top: 2px; }
 .restore-checkbox-wrap span { font-size: 13.5px; font-weight: 700; color: var(--text); }
 .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+/* ===========================
+   نافذة حول الأمانات - احترافية
+   =========================== */
+.about-modal {
+    max-width: 420px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    /* خلفية موحّدة متدرّجة تغطي كامل النافذة */
+    background: linear-gradient(160deg, var(--primary) 0%, var(--primary-dark) 55%, #b84a0e 100%);
+    border-radius: var(--radius-lg);
+}
 
+body.dark .about-modal {
+    background: linear-gradient(160deg, #2a1e16 0%, #1e140d 55%, #150d07 100%);
+}
+
+.about-close {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 10;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    backdrop-filter: blur(10px);
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+}
+.about-close:hover {
+    background: rgba(255,255,255,0.4);
+    color: #fff;
+}
+
+/* الهيدر */
+.about-hero {
+    position: relative;
+    padding: 36px 20px 22px;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+.about-hero-glow {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.18) 0%, transparent 45%);
+    pointer-events: none;
+}
+
+.about-logo-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.35);
+    margin-bottom: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    animation: aboutFloat 3.5s ease-in-out infinite;
+}
+
+@keyframes aboutFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+.about-logo {
+    font-size: 42px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+}
+
+.about-app-name {
+    position: relative;
+    font-size: 26px;
+    font-weight: 900;
+    margin: 0 0 4px;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+.about-app-tagline {
+    position: relative;
+    font-size: 12.5px;
+    opacity: 0.9;
+    margin: 0 0 14px;
+    font-weight: 600;
+}
+
+.about-version-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px 14px;
+    border-radius: var(--radius-full);
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.about-version-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+    animation: aboutPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes aboutPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* الجسم - شفاف ليأخذ نفس خلفية النافذة */
+.about-body {
+    padding: 8px 20px 24px;
+    background: transparent;
+}
+
+/* بطاقة المطوّر - شفافة */
+.about-dev-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.14);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+}
+
+body.dark .about-dev-card {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+}
+
+.about-dev-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    border: 1px solid rgba(255,255,255,0.3);
+    flex-shrink: 0;
+}
+
+.about-dev-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.about-dev-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.about-dev-name {
+    font-size: 17px;
+    font-weight: 900;
+    color: #fff;
+}
+
+/* زر الاتصال مع حركة ضوء */
+.about-call-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    color: #fff;
+    text-decoration: none;
+    border-radius: var(--radius);
+    box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+    transition: all var(--transition);
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+/* حركة الضوء المار */
+.about-call-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255,255,255,0.55) 50%,
+        transparent 100%
+    );
+    transform: skewX(-20deg);
+    animation: aboutShine 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes aboutShine {
+    0%   { left: -75%; }
+    50%  { left: 125%; }
+    100% { left: 125%; }
+}
+
+.about-call-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(16,185,129,0.5);
+}
+
+.about-call-btn:active {
+    transform: scale(0.98);
+}
+
+.about-call-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.about-call-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.about-call-label {
+    font-size: 11px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+.about-call-number {
+    font-size: 17px;
+    font-weight: 900;
+    direction: ltr;
+    text-align: right;
+    letter-spacing: 0.5px;
+}
+
+/* التذييل */
+.about-footer {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+}
+
+.about-copyright {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.about-made-with {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 600;
+}
+
+.about-made-with .heart {
+    display: inline-block;
+    animation: aboutHeart 1.5s ease-in-out infinite;
+}
+
+@keyframes aboutHeart {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* استجابة الجوال */
+@media (max-width: 480px) {
+    .about-app-name { font-size: 23px; }
+    .about-logo-wrap { width: 72px; height: 72px; }
+    .about-logo { font-size: 36px; }
+    .about-call-number { font-size: 15.5px; }
+}
 </style>
 </head>
 <body>
@@ -1021,7 +1328,7 @@ input:checked + .pin-slider:before { transform: translateX(20px); }
             <button class="btn btn-primary" id="btnArchiveCustomer" style="font-size:13px; padding:8px 14px;">🗂️ أرشفة نزيل</button>
         </div>
         <div style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:2px;">
-            <button class="btn btn-ghost" id="tabTransferred" style="border-radius:0; border-bottom:3px solid var(--primary); color:var(--primary); font-weight:800; padding:10px 18px;">📦 نقل نزيل</button>
+            <button class="btn btn-ghost" id="tabTransferred" style="border-radius:0; border-bottom:3px solid var(--primary); color:var(--primary); font-weight:800; padding:10px 18px;">📦 نقل نزلاء</button>
             <button class="btn btn-ghost" id="tabVacated" style="border-radius:0; padding:10px 18px;">🚪 إخلاء سبيل</button>
         </div>
         <div class="expandable-list" id="archiveList"></div>
@@ -1036,8 +1343,8 @@ input:checked + .pin-slider:before { transform: translateX(20px); }
             <div class="report-card" data-report="month"><div class="report-card-icon">📆</div><div class="report-card-info"><div class="report-card-title">حركة الشهر</div><div class="report-card-desc">كل حركات شهر محدد</div></div><span class="report-card-arrow">←</span></div>
             <div class="report-card" data-report="range"><div class="report-card-icon">📊</div><div class="report-card-info"><div class="report-card-title">بين تاريخين</div><div class="report-card-desc">حركات فترة محددة</div></div><span class="report-card-arrow">←</span></div>
             <div class="report-card" data-report="balances"><div class="report-card-icon">💰</div><div class="report-card-info"><div class="report-card-title">أرصدة نزلاء</div><div class="report-card-desc">أرصدة نزلاء محددين</div></div><span class="report-card-arrow">←</span></div>
-            <div class="report-card" data-report="transferred"><div class="report-card-icon">📦</div><div class="report-card-info"><div class="report-card-title">قائمة المنقولين</div><div class="report-card-desc">كل من رُحّلوا إلى مكان آخر</div></div><span class="report-card-arrow">←</span></div>
-            <div class="report-card" data-report="vacated"><div class="report-card-icon">🚪</div><div class="report-card-info"><div class="report-card-title">قائمة المخلّين</div><div class="report-card-desc">كل من أُخلوا نهائياً</div></div><span class="report-card-arrow">←</span></div>
+         <div class="report-card" data-report="transferred"><div class="report-card-icon">📦</div><div class="report-card-info"><div class="report-card-title">قائمة نقل نزلاء</div><div class="report-card-desc">كل من رُحّلوا إلى مكان آخر</div></div><span class="report-card-arrow">←</span></div>
+<div class="report-card" data-report="vacated"><div class="report-card-icon">🚪</div><div class="report-card-info"><div class="report-card-title">قائمة إخلاء سبيل</div><div class="report-card-desc">كل من أُخلوا نهائياً</div></div><span class="report-card-arrow">←</span></div>
         </div>
     </section>
 </main>
@@ -1214,27 +1521,46 @@ input:checked + .pin-slider:before { transform: translateX(20px); }
     </div>
 </div>
 
-<!-- نافذة حول الأمانات -->
+<!-- نافذة حول الأمانات - النسخة الاحترافية -->
 <div class="modal-overlay" id="modalAbout">
-    <div class="modal" style="max-width:420px;">
-        <div class="modal-header"><h2>ℹ️ حول الأمانات</h2><button class="modal-close" data-close="modalAbout">×</button></div>
-        <div class="modal-body">
-            <div style="text-align:center; margin-bottom:20px;">
-                <div style="font-size:64px; line-height:1; margin-bottom:10px;">🏦</div>
-                <h3 style="font-size:22px; font-weight:900; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">الأمانات</h3>
-                <p style="font-size:13px; color:var(--text-soft); margin-top:4px;">نظام إدارة الودائع والنزلاء</p>
-                <div style="display:inline-block; margin-top:8px; background:var(--primary-light); color:var(--primary); padding:4px 12px; border-radius:9999px; font-size:11px; font-weight:800;">الإصدار 3.1</div>
+    <div class="modal about-modal">
+        <button class="modal-close about-close" data-close="modalAbout">×</button>
+
+        <div class="about-hero">
+            <div class="about-hero-glow"></div>
+            <div class="about-logo-wrap">
+                <span class="about-logo">🏦</span>
             </div>
-            <div style="height:1px; background:var(--border-soft); margin:16px 0;"></div>
-            <div style="font-size:12px; color:var(--text-soft); font-weight:700; margin-bottom:10px; text-align:center;">للاستفسار والدعم الفني</div>
-            <div style="background:var(--border-soft); padding:16px; border-radius:14px; text-align:center;">
-                <div style="font-size:28px; margin-bottom:8px;">👨‍💻</div>
-                <div style="font-size:16px; font-weight:800; color:var(--text);">فايز جان</div>
-                <div style="font-size:12px; color:var(--text-light); margin-top:2px;">مطوّر التطبيق</div>
+            <h2 class="about-app-name">الأمانات</h2>
+            <p class="about-app-tagline">نظام إدارة الودائع والنزلاء</p>
+            <div class="about-version-badge">
+                <span class="about-version-dot"></span>
+                الإصدار 3.1
             </div>
-            <a href="tel:+963988601888" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:14px; padding:14px; background:linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%); color:#fff; text-decoration:none; border-radius:12px; font-weight:800; font-size:15px; box-shadow:0 4px 14px rgba(16,185,129,0.28);">📞 <span>0988601888</span></a>
-            <div style="height:1px; background:var(--border-soft); margin:16px 0;"></div>
-            <div style="text-align:center; font-size:11px; color:var(--text-light); line-height:1.8;">© 2026 جميع الحقوق محفوظة<br>صُنع بـ ❤️ للاستخدام الشخصي</div>
+        </div>
+
+        <div class="about-body">
+
+            <div class="about-dev-card">
+                <div class="about-dev-avatar">👨‍💻</div>
+                <div class="about-dev-info">
+                    <div class="about-dev-label">تطوير وبرمجة</div>
+                    <div class="about-dev-name">فايز جان</div>
+                </div>
+            </div>
+
+            <a href="tel:+963988601888" class="about-call-btn">
+                <span class="about-call-icon">📞</span>
+                <span class="about-call-text">
+                    <span class="about-call-label">للاستفسار والدعم الفني</span>
+                    <span class="about-call-number">0988601888</span>
+                </span>
+            </a>
+
+            <div class="about-footer">
+                <div class="about-copyright">© 2026 جميع الحقوق محفوظة</div>
+                <div class="about-made-with">صُنع بـ <span class="heart">❤️</span> للاستخدام الشخصي</div>
+            </div>
         </div>
     </div>
 </div>
@@ -2123,7 +2449,7 @@ function renderArchive() {
     const listEl = document.getElementById('archiveList'), emptyEl = document.getElementById('archiveEmpty');
     if (filtered.length === 0) {
         listEl.innerHTML = ''; emptyEl.style.display = 'block';
-        document.getElementById('archiveEmptyTitle').textContent = currentArchiveTab === 'نقل' ? 'لا يوجد منقولون' : 'لا يوجد مخلّون'; document.getElementById('archiveEmptyDesc').textContent = '—'; return;
+        document.getElementById('archiveEmptyTitle').textContent = currentArchiveTab === 'نقل' ? 'لا يوجد نزلاء منقولون' : 'لا يوجد نزلاء مخلّى سبيلهم'; document.getElementById('archiveEmptyDesc').textContent = '—'; return;
     }
     emptyEl.style.display = 'none';
     listEl.innerHTML = filtered.map(a => `
@@ -2323,8 +2649,8 @@ function openReport(type) {
     else if (type === 'month') { titleEl.textContent = '📆 حركة الشهر'; renderMonthFilterForReport(); }
     else if (type === 'range') { titleEl.textContent = '📊 حركة بين تاريخين'; renderRangeFilterForReport(); }
     else if (type === 'balances') { titleEl.textContent = '💰 أرصدة نزلاء محددين'; renderBalancesFilterForReport(); }
-    else if (type === 'transferred') { titleEl.textContent = '📦 قائمة المنقولين'; renderArchiveReport('نقل'); }
-    else if (type === 'vacated') { titleEl.textContent = '🚪 قائمة المخلّين'; renderArchiveReport('إخلاء'); }
+  else if (type === 'transferred') { titleEl.textContent = '📦 قائمة نقل نزلاء'; renderArchiveReport('نقل'); }
+else if (type === 'vacated') { titleEl.textContent = '🚪 قائمة إخلاء سبيل'; renderArchiveReport('إخلاء'); }
     openModal('modalReport');
 }
 function calcSummary(txs) {
@@ -2469,7 +2795,7 @@ function renderArchiveReport(reason) {
         return [esc(a.customer.name), sortLabel, formatDate(a.archived_at), reason === 'نقل' ? esc(a.transfer_to || '—') : '—', formatNumber(a.balance_syp), formatNumber(a.balance_usd)];
     });
     if (rows.length > 0) { rows.push(['<strong>الإجمالي</strong>', '—', '—', '—', '<strong>' + formatNumber(totalSYP) + '</strong>', '<strong>' + formatNumber(totalUSD) + '</strong>']); }
-    showReportPreview({ title: reason === 'نقل' ? '📦 قائمة المنقولين' : '🚪 قائمة المخلّين', subtitle: `عدد: ${list.length}`, summary: [{ label: 'العدد', value: list.length, color: 'primary' }, { label: 'إجمالي ل.س', value: formatNumber(totalSYP), color: 'success' }, { label: 'إجمالي $', value: formatNumber(totalUSD), color: 'success' }], headers: reason === 'نقل' ? ['النزيل', 'الفرز', 'تاريخ النقل', 'إلى', 'رصيد ل.س', 'رصيد $'] : ['النزيل', 'الفرز', 'تاريخ الإخلاء', '—', 'رصيد ل.س', 'رصيد $'], rows });
+    showReportPreview({ title: reason === 'نقل' ? '📦 قائمة نقل نزلاء' : '🚪 قائمة إخلاء سبيل', subtitle: `عدد: ${list.length}`, summary: [{ label: 'العدد', value: list.length, color: 'primary' }, { label: 'إجمالي ل.س', value: formatNumber(totalSYP), color: 'success' }, { label: 'إجمالي $', value: formatNumber(totalUSD), color: 'success' }], headers: reason === 'نقل' ? ['النزيل', 'الفرز', 'تاريخ النقل', 'إلى', 'رصيد ل.س', 'رصيد $'] : ['النزيل', 'الفرز', 'تاريخ الإخلاء', '—', 'رصيد ل.س', 'رصيد $'], rows });
 }
 
 function bindEvents() {
@@ -2760,17 +3086,16 @@ function switchArchiveTab(reason) {
 }
 
 function init() {
-    const savedPinHash = localStorage.getItem('amanat_pin');
+    const savedPin = localStorage.getItem('amanat_pin');
     const lockScreen = document.getElementById('lockScreen');
     
-    if (savedPinHash) {
+    if (savedPin) {
         lockScreen.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
-        const unlock = async () => {
+        const unlock = () => {
             const val = document.getElementById('lockInput').value;
-            const valHash = await hashPin(val);
-            if (valHash === savedPinHash) {
+            if (val === savedPin) {
                 lockScreen.style.display = 'none';
                 document.body.style.overflow = '';
                 startAppCore();
