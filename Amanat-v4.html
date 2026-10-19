@@ -1233,6 +1233,36 @@ body.preview-mode .card-actions [data-action="restore"],
 body.preview-mode #btnDeleteTx {
     display: none !important;
 }
+/* ====== إصلاح مشكلة اللمس في الشريط السفلي ====== */
+.bottom-nav {
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    transform: translateZ(0); /* إجبار طبقة compositing مستقلة */
+}
+.bottom-nav-item {
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 1;
+}
+/* منع أي عنصر شفاف من اعتراض اللمس فوق الشريط السفلي */
+.bottom-nav.hidden {
+    pointer-events: none !important;
+    visibility: hidden;
+    transform: translateY(100%) !important;
+}
+/* ضمان أن التوست لا يعترض اللمس */
+.toast {
+    pointer-events: none !important;
+}
+/* ضمان أن شريط المعاينة لا يعترض اللمس بعد إخفائه */
+.preview-banner[style*="display: none"],
+.preview-banner[style*="display:none"] {
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
 </style>
 </head>
 <body>
@@ -2275,7 +2305,22 @@ function todayISO() { const d = new Date(); return `${d.getFullYear()}-${String(
 function monthNameAr(yearMonth) { const [y, m] = yearMonth.split('-').map(Number); const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']; return months[m-1] + ' ' + y; }
 function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 let toastTimer = null;
-function toast(msg, type='') { const el = document.getElementById('toast'); el.textContent = msg; el.className = 'toast show ' + type; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.className = 'toast ' + type; }, 2600); }
+function toast(msg, type='') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show ' + type;
+    el.style.pointerEvents = 'none';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        el.className = 'toast ' + type;
+        el.style.pointerEvents = 'none';
+        // إجبار إعادة حساب layout للشريط السفلي بعد اختفاء التوست
+        const _bn = document.getElementById('bottomNav');
+        if (_bn && !_bn.classList.contains('hidden')) {
+            _bn.style.pointerEvents = 'auto';
+        }
+    }, 2600);
+}
 function openModal(id) { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 function buildTxDateISO(dateStr) {
@@ -2308,9 +2353,13 @@ function switchView(viewName) {
     const viewMap = { 'today': 'viewToday', 'customers': 'viewCustomers', 'month': 'viewMonth', 'customer': 'viewCustomer', 'archive': 'viewArchive', 'reports': 'viewReports' };
     const id = viewMap[viewName]; if (!id) return;
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active');
-    const showBottomNav = ['today','customers','month'].includes(viewName);
-    document.getElementById('bottomNav').classList.toggle('hidden', !showBottomNav); document.body.classList.toggle('no-bottom-nav', !showBottomNav);
-    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === viewName));
+   const showBottomNav = ['today','customers','month'].includes(viewName);
+const _bn = document.getElementById('bottomNav');
+_bn.classList.toggle('hidden', !showBottomNav);
+_bn.style.pointerEvents = showBottomNav ? 'auto' : 'none';
+// إجبار إعادة حساب layout
+void _bn.offsetHeight;
+document.body.classList.toggle('no-bottom-nav', !showBottomNav);
     currentView = viewName; window.scrollTo({ top: 0, behavior: 'smooth' });
     if (viewName === 'today') renderToday();
     if (viewName === 'customers') { renderSortChips(); renderCustomers(); }
@@ -3523,7 +3572,24 @@ function exitPreviewMode() {
     // إخفاء الطبقة
     document.body.classList.remove('preview-mode');
     document.getElementById('previewBanner').style.display = 'none';
+// ====== إصلاح مشكلة اللمس ======
+document.body.classList.remove('no-scroll', 'no-bottom-nav');
+document.body.style.overflow = '';
+document.body.style.paddingTop = '';
 
+const _nav = document.getElementById('bottomNav');
+if (_nav) {
+    _nav.classList.remove('hidden');
+    _nav.style.transform = '';
+    _nav.style.pointerEvents = 'auto';
+}
+
+const _toast = document.getElementById('toast');
+if (_toast) {
+    _toast.style.display = '';
+    _toast.style.pointerEvents = 'none';
+}
+// ====== نهاية الإصلاح ======
     // إعادة الحالة
     currentCustomerId = null;
     currentSearch = '';
@@ -4036,5 +4102,6 @@ document.addEventListener('DOMContentLoaded', () => { DB.onReady(init); });
 return { goHome, openCustomer, switchView };
 })();
 </script>
+
 </body>
 </html>
