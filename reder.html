@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f37021">
+<title>الأمانات — قارئ النسخ الاحتياطية</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+:root {
+    --primary: #f37021;
+    --primary-dark: #d95d15;
+    --primary-light: #fff3ec;
+    --primary-soft: #ffeadb;
+    --success: #10b981;
+    --success-dark: #059669;
+    --success-light: #ecfdf5;
+    --success-soft: #d1fae5;
+    --danger: #ef4444;
+    --danger-dark: #dc2626;
+    --danger-light: #fef2f2;
+    --danger-soft: #fee2e2;
+    --info: #3b82f6;
+    --text: #0f172a;
+    --text-soft: #475569;
+    --text-light: #94a3b8;
+    --border: #e2e8f0;
+    --border-soft: #f1f5f9;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.05);
+    --shadow: 0 4px 12px rgba(15,23,42,0.08);
+    --shadow-md: 0 8px 24px rgba(15,23,42,0.1);
+    --shadow-lg: 0 16px 48px rgba(15,23,42,0.14);
+    --shadow-primary: 0 8px 24px rgba(243,112,33,0.28);
+    --radius-sm: 10px;
+    --radius: 14px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark {
+    --text: #f1f5f9;
+    --text-soft: #cbd5e1;
+    --text-light: #94a3b8;
+    --border: #334155;
+    --border-soft: #1e293b;
+    --bg: #0f172a;
+    --white: #1e293b;
+    --primary-light: #2a1e16;
+    --primary-soft: #3a281a;
+    --success-light: #0d2019;
+    --success-soft: #134e3a;
+    --danger-light: #2a1717;
+    --danger-soft: #4a1f1f;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+button, input, textarea, select { font-family: inherit; }
+
+body {
+    font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* ===========================
+   الهيدر
+   =========================== */
+.app-header {
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 10px;
+    height: 58px;
+}
+
+.header-right, .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.logo-icon { font-size: 22px; filter: drop-shadow(0 2px 4px rgba(243,112,33,0.25)); }
+
+.logo h1 {
+    font-size: 18px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.viewer-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    background: var(--info);
+    color: #fff;
+    letter-spacing: 0.3px;
+}
+
+/* ===========================
+   الأزرار
+   =========================== */
+.btn {
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(243,112,33,0.28);
+}
+.btn-primary:hover { box-shadow: 0 8px 22px rgba(243,112,33,0.4); transform: translateY(-1px); }
+
+.btn-secondary { background: var(--border-soft); color: var(--text); }
+.btn-secondary:hover { background: var(--border); }
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(16,185,129,0.28);
+}
+.btn-success:hover { box-shadow: 0 8px 22px rgba(16,185,129,0.4); transform: translateY(-1px); }
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    color: #fff;
+}
+.btn-danger:hover { box-shadow: 0 8px 22px rgba(239,68,68,0.4); transform: translateY(-1px); }
+
+.btn-outline {
+    background: var(--white);
+    color: var(--text-soft);
+    border: 1.5px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-soft);
+    padding: 8px;
+    border-radius: var(--radius-full);
+}
+.btn-ghost:hover { background: var(--border-soft); color: var(--text); }
+
+.btn-icon {
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    border-radius: var(--radius-full);
+    min-width: 40px;
+    flex-shrink: 0;
+}
+
+.btn-block { width: 100%; }
+
+/* ===========================
+   شاشة الترحيب
+   =========================== */
+.welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+    min-height: calc(100vh - 120px);
+}
+
+.welcome-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.welcome h2 {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+.welcome p {
+    font-size: 14.5px;
+    color: var(--text-soft);
+    max-width: 500px;
+    margin-bottom: 30px;
+    line-height: 1.8;
+}
+
+.upload-area {
+    background: var(--white);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 30px;
+    max-width: 480px;
+    width: 100%;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.upload-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+
+.upload-area h3 {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.upload-area p { font-size: 13px; color: var(--text-soft); margin-bottom: 0; }
+
+/* ===========================
+   شريط معلومات الملف
+   =========================== */
+.file-info-bar {
+    background: linear-gradient(135deg, var(--info) 0%, #2563eb 100%);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin: 14px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+}
+
+.file-info-bar .info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.file-info-bar .info-value {
+    font-weight: 800;
+    direction: ltr;
+}
+
+/* ===========================
+   بطاقة الإحصائيات
+   =========================== */
+.stats-panel {
+    margin: 14px 0;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+}
+
+.stats-box {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 88% 12%, rgba(255,255,255,0.18) 0%, transparent 45%),
+                      radial-gradient(circle at 12% 88%, rgba(255,255,255,0.12) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.stats-box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.stats-box-title {
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stats-box-balances {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: relative;
+}
+
+.box-balance {
+    background: rgba(255,255,255,0.14);
+    backdrop-filter: blur(4px);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+}
+
+.box-balance-label {
+    font-size: 11.5px;
+    opacity: 0.9;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.box-balance-value {
+    font-size: 20px;
+    font-weight: 900;
+    direction: ltr;
+    color: #fff;
+}
+
+/* ===========================
+   شريط الفلترة (chips)
+   =========================== */
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px 12px;
+    margin-bottom: 4px;
+    scrollbar-width: thin;
+}
+
+.filter-chips::-webkit-scrollbar { height: 4px; }
+.filter-chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.chip {
+    flex-shrink: 0;
+    min-width: 46px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: var(--white);
+    color: var(--text-soft);
+    border: 2px solid var(--border);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+}
+
+.chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
+
+.chip.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: var(--shadow-primary);
+}
+
+.chip .chip-count {
+    font-size: 10.5px;
+    opacity: 0.75;
+    margin-right: 4px;
+    font-weight: 700;
+}
+
+/* ===========================
+   شريط البحث
+   =========================== */
+.search-box { margin: 12px 0; position: relative; }
+
+.search-box input {
+    width: 100%;
+    padding: 13px 46px 13px 18px;
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    font-size: 14.5px;
+    background: var(--white);
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+    color: var(--text);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.search-box::after {
+    content: '🔍';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 17px;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* ===========================
+   عنوان قسم
+   =========================== */
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0 12px;
+    gap: 10px;
+}
+
+.section-title h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title .sub {
+    font-size: 12.5px;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+/* ===========================
+   بطاقات قابلة للتوسع
+   =========================== */
+.expandable-list { display: grid; gap: 10px; padding-bottom: 40px; }
+
+.expandable-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-soft);
+    transition: all var(--transition);
+    overflow: hidden;
+}
+
+.expandable-card.expanded {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-soft);
+}
+
+.card-summary {
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-right: 4px solid;
+    transition: background var(--transition);
+}
+
+.card-summary:hover { background: var(--border-soft); }
+
+.card-summary.deposit { border-right-color: var(--success); }
+.card-summary.withdraw { border-right-color: var(--danger); }
+.card-summary.neutral { border-right-color: var(--primary); }
+
+.card-summary-info { flex: 1; min-width: 0; }
+
+.card-summary-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.card-summary-sub {
+    font-size: 12.5px;
+    color: var(--text-light);
+    margin-top: 3px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.card-summary-amount {
+    font-size: 17px;
+    font-weight: 900;
+    direction: ltr;
+    white-space: nowrap;
+}
+
+.card-summary-amount.deposit { color: var(--success); }
+.card-summary-amount.withdraw { color: var(--danger); }
+.card-summary-amount.neutral { color: var(--primary); }
+
+.card-summary-arrow {
+    color: var(--text-light);
+    font-size: 14px;
+    transition: transform var(--transition);
+    flex-shrink: 0;
+}
+
+.expandable-card.expanded .card-summary-arrow {
+    transform: rotate(180deg);
+}
+
+.card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+.expandable-card.expanded .card-details {
+    max-height: 3000px;
+}
+
+.card-details-inner {
+    padding: 0 16px 14px;
+    border-top: 1px dashed var(--border);
+    padding-top: 14px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.detail-label {
+    color: var(--text-soft);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    color: var(--text);
+    font-weight: 700;
+    text-align: left;
+    word-break: break-word;
+}
+
+.detail-value.ltr { direction: ltr; }
+
+/* بطاقة النزيل */
+.tag-sort {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary-soft);
+}
+
+/* سجل الحركات داخل النزيل */
+.tx-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.grouped-tx {
+    background: var(--border-soft);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    border-right: 3px solid;
+}
+
+.grouped-tx.deposit { border-right-color: var(--success); }
+.grouped-tx.withdraw { border-right-color: var(--danger); }
+
+/* أزرار البطاقة */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.card-actions .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 90px;
+}
+
+/* حالة فارغة */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-light);
+}
+
+.empty-icon { font-size: 62px; margin-bottom: 14px; opacity: 0.85; }
+.empty-state h3 { font-size: 17px; margin-bottom: 6px; color: var(--text); font-weight: 800; }
+.empty-state p { font-size: 13.5px; color: var(--text-soft); }
+
+/* ===========================
+   الشاشات
+   =========================== */
+.view { display: none; animation: fadeInView 0.3s; }
+.view.active { display: block; }
+
+@keyframes fadeInView {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================
+   Toast
+   =========================== */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--text);
+    color: var(--white);
+    padding: 12px 22px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 13.5px;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 3000;
+    opacity: 0;
+    max-width: 90%;
+    text-align: center;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%); }
+.toast.error { background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%); }
+
+/* الاستجابة */
+@media (max-width: 720px) {
+    .logo h1 { font-size: 16px; }
+    .btn { padding: 9px 13px; font-size: 13px; }
+    .btn-icon { width: 36px; height: 36px; min-width: 36px; font-size: 16px; }
+    .box-balance-value { font-size: 18px; }
+    .card-summary { padding: 12px 14px; }
+    .card-summary-title { font-size: 14px; }
+    .card-summary-amount { font-size: 15px; }
+    .card-summary-sub { font-size: 11.5px; }
+    .welcome h2 { font-size: 20px; }
+    .upload-area { padding: 30px 20px; }
+}
+#print-container {
+    display: none;
+}
+
+@media print {
+    html, body {
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #fff !important;
+    }
+
+    body > *:not(#print-container) {
+        display: none !important;
+    }
+
+    #print-container {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        background: #fff;
+        color: #1f2937;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+        font-family: 'Cairo', sans-serif;
+        direction: rtl;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+    }
+
+    #print-container table {
+        page-break-inside: auto;
+    }
+
+    #print-container tr {
+        page-break-inside: avoid;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm 10mm;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- ===========================
+     الهيدر
+     =========================== -->
+<header class="app-header">
+    <div class="header-content">
+        <div class="header-right">
+            <div class="logo">
+                <span class="logo-icon">🏦</span>
+                <h1>الأمانات</h1>
+                <span class="viewer-badge">قارئ النسخ</span>
+            </div>
+        </div>
+        <div class="header-left" id="headerActions" style="display:none;">
+            <button class="btn btn-ghost btn-icon" id="btnDarkMode" title="الوضع الليلي">🌙</button>
+            <button class="btn btn-outline btn-icon" id="btnReload" title="فتح ملف آخر">📂</button>
+            <button class="btn btn-ghost btn-icon" id="btnCloseFile" title="إغلاق الملف">✕</button>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- ==============================================
+         شاشة 1: الترحيب + رفع الملف
+         ============================================== -->
+    <section id="viewWelcome" class="view active">
+        <div class="welcome">
+            <div class="welcome-icon">📦</div>
+            <h2>قارئ النسخ الاحتياطية</h2>
+            <p>
+                افتح أي ملف نسخة احتياطية (JSON) لعرض محتواه <strong>بدون تعديل</strong>.<br>
+                ابحث عن النزلاء، اعرض حركاتهم، واطبع التقارير — بأمان تام.
+            </p>
+
+            <div class="upload-area" id="uploadArea">
+                <span class="upload-icon">📁</span>
+                <h3>اختر ملف النسخة الاحتياطية</h3>
+                <p>اسحب الملف هنا أو اضغط للاختيار</p>
+                <input type="file" id="fileInput" accept=".json" style="display:none;">
+            </div>
+
+            <p style="margin-top:24px; font-size:12.5px; color:var(--text-light);">
+                🔒 لا يتم تعديل الملف — عرض فقط
+            </p>
+        </div>
+    </section>
+
+    <!-- ==============================================
+         شاشة 2: عرض محتوى النسخة
+         ============================================== -->
+    <section id="viewContent" class="view">
+
+        <!-- شريط معلومات الملف -->
+        <div class="file-info-bar">
+            <div class="info-item">
+                📄 <span id="infoFileName" style="font-weight:800;">—</span>
+            </div>
+            <div class="info-item">
+                📅 <span class="info-value" id="infoExportDate">—</span>
+            </div>
+            <div class="info-item">
+                👥 <span class="info-value" id="infoCustomersCount">0</span> نزيل
+            </div>
+            <div class="info-item">
+                📊 <span class="info-value" id="infoTxCount">0</span> حركة
+            </div>
+        </div>
+
+        <!-- بطاقة الإحصائيات -->
+        <div class="stats-panel">
+            <div class="stats-box">
+                <div class="stats-box-header">
+                    <div class="stats-box-title">💼 إجمالي الأرصدة</div>
+                    <div style="font-size:11px; opacity:0.8;">من هذه النسخة</div>
+                </div>
+                <div class="stats-box-balances">
+                    <div class="box-balance">
+                        <div class="box-balance-label">الليرة السورية (ل.س)</div>
+                        <div class="box-balance-value" id="statsSYP">0</div>
+                    </div>
+                    <div class="box-balance">
+                        <div class="box-balance-label">الدولار الأمريكي ($)</div>
+                        <div class="box-balance-value" id="statsUSD">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- البحث -->
+        <div class="search-box">
+            <input type="text" id="searchInput"
+                   placeholder="ابحث عن نزيل بالاسم أو الهاتف..."
+                   autocomplete="off">
+        </div>
+
+        <!-- الفرز -->
+        <div class="filter-chips" id="sortChips"></div>
+
+        <!-- عنوان قسم -->
+        <div class="section-title">
+            <h2>👥 النزلاء</h2>
+            <span class="sub" id="customersCount">—</span>
+        </div>
+
+        <!-- قائمة النزلاء -->
+        <div class="expandable-list" id="customersList"></div>
+
+        <!-- حالة فارغة -->
+        <div class="empty-state" id="customersEmpty" style="display:none;">
+            <div class="empty-icon">📭</div>
+            <h3 id="emptyTitle">لا نتائج</h3>
+            <p id="emptyDesc">جرّب تغيير البحث أو الفرز</p>
+        </div>
+
+    </section>
+
+</main>
+
+<!-- ===========================
+     Toast
+     =========================== -->
+<div id="print-container"></div>
+  <div class="toast" id="toast"></div>
+
+</body>
+</html>
+<script>
+/* =========================================================
+   الأمانات — قارئ النسخ الاحتياطية v1
+   قراءة فقط، بدون أي تعديل على الملف الأصلي
+   ========================================================= */
+
+const Viewer = (() => {
+
+/* =========================================================
+   1) الحالة العامة
+   ========================================================= */
+const STATE = {
+    loaded:      false,
+    fileName:    '',
+    exportDate:  null,
+    customers:   [],
+    transactions:[],
+    archive:     [],
+    search:      '',
+    sort:        'الكل',
+    darkMode:    false
+};
+
+const SORT_OPTIONS = ['م1','م2','م3','م4','م5','م6','م7','م8'];
+
+
+/* =========================================================
+   2) أدوات مساعدة
+   ========================================================= */
+function formatNumber(n) {
+    if (n === 0 || n === '0' || n === null || n === undefined) return '0';
+    return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0, maximumFractionDigits: 2
+    }).format(n);
+}
+
+function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function esc(s) {
+    if (!s) return '';
+    return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+let toastTimer = null;
+function toast(msg, type='') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.className = 'toast ' + type; }, 2600);
+}
+
+
+/* =========================================================
+   3) حسابات على البيانات المحمّلة
+   ========================================================= */
+function getBalance(customerId, currency) {
+    let b = 0;
+    for (const t of STATE.transactions) {
+        if (t.customer_id !== customerId) continue;
+        if (t.currency !== currency) continue;
+        b += (t.type === 'deposit' ? t.amount : -t.amount);
+    }
+    return b;
+}
+
+function getCustomerTotals(customerId) {
+    const res = { depSYP:0, depUSD:0, wdSYP:0, wdUSD:0, balSYP:0, balUSD:0 };
+    for (const t of STATE.transactions) {
+        if (t.customer_id !== customerId) continue;
+        if (t.type === 'deposit') {
+            if (t.currency === 'SYP') { res.depSYP += t.amount; res.balSYP += t.amount; }
+            else { res.depUSD += t.amount; res.balUSD += t.amount; }
+        } else {
+            if (t.currency === 'SYP') { res.wdSYP += t.amount; res.balSYP -= t.amount; }
+            else { res.wdUSD += t.amount; res.balUSD -= t.amount; }
+        }
+    }
+    return res;
+}
+
+function getCustomerTransactions(customerId) {
+    return STATE.transactions
+        .filter(t => t.customer_id === customerId)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function getGrandTotals() {
+    let syp = 0, usd = 0;
+    for (const c of STATE.customers) {
+        syp += getBalance(c.id, 'SYP');
+        usd += getBalance(c.id, 'USD');
+    }
+    return { SYP: syp, USD: usd };
+}
+
+
+/* =========================================================
+   4) تحميل ملف JSON
+   ========================================================= */
+function loadFile(file) {
+    if (!file) return;
+
+    if (!file.name.endsWith('.json')) {
+        toast('الملف يجب أن يكون بصيغة JSON', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+
+            // التحقق من البنية
+            if (!data.customers || !Array.isArray(data.customers)) {
+                throw new Error('الملف لا يحتوي على بيانات نزلاء صحيحة');
+            }
+            if (!data.transactions || !Array.isArray(data.transactions)) {
+                throw new Error('الملف لا يحتوي على بيانات حركات صحيحة');
+            }
+
+            // تحميل البيانات
+            STATE.loaded       = true;
+            STATE.fileName     = file.name;
+            STATE.exportDate   = data.exported_at || null;
+            STATE.customers    = data.customers;
+            STATE.transactions = data.transactions;
+            STATE.archive      = data.archive || [];
+            STATE.search       = '';
+            STATE.sort         = 'الكل';
+
+            toast(`تم تحميل الملف بنجاح (${data.customers.length} نزيل)`, 'success');
+            renderAll();
+            showView('viewContent');
+
+        } catch (err) {
+            console.error(err);
+            toast('فشل قراءة الملف: ' + err.message, 'error');
+        }
+    };
+
+    reader.onerror = () => toast('فشل قراءة الملف', 'error');
+    reader.readAsText(file);
+}
+
+function resetFile() {
+    STATE.loaded       = false;
+    STATE.fileName     = '';
+    STATE.exportDate   = null;
+    STATE.customers    = [];
+    STATE.transactions = [];
+    STATE.archive      = [];
+    STATE.search       = '';
+    STATE.sort         = 'الكل';
+
+    document.getElementById('searchInput').value = '';
+    showView('viewWelcome');
+    document.getElementById('fileInput').value = '';
+}
+
+
+/* =========================================================
+   5) التنقل بين الشاشات
+   ========================================================= */
+function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    // إظهار/إخفاء أزرار الهيدر
+    document.getElementById('headerActions').style.display =
+        id === 'viewContent' ? 'flex' : 'none';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+/* =========================================================
+   6) عرض البيانات
+   ========================================================= */
+function renderAll() {
+    renderFileInfo();
+    renderStats();
+    renderSortChips();
+    renderCustomers();
+}
+
+function renderFileInfo() {
+    document.getElementById('infoFileName').textContent = STATE.fileName || '—';
+    document.getElementById('infoExportDate').textContent =
+        STATE.exportDate ? formatDate(STATE.exportDate) : '—';
+    document.getElementById('infoCustomersCount').textContent = STATE.customers.length;
+    document.getElementById('infoTxCount').textContent = STATE.transactions.length;
+}
+
+function renderStats() {
+    const totals = getGrandTotals();
+    document.getElementById('statsSYP').textContent = formatNumber(totals.SYP);
+    document.getElementById('statsUSD').textContent = formatNumber(totals.USD);
+}
+
+function renderSortChips() {
+    const container = document.getElementById('sortChips');
+
+    const counts = { 'الكل': STATE.customers.length };
+    SORT_OPTIONS.forEach(s => counts[s] = 0);
+    STATE.customers.forEach(c => {
+        if (c.sort && counts[c.sort] !== undefined) counts[c.sort]++;
+    });
+
+    // لا تظهر الأزرار إذا لم يكن هناك أي فرز في البيانات
+    const hasSorts = SORT_OPTIONS.some(s => counts[s] > 0);
+    if (!hasSorts) {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'flex';
+
+    container.innerHTML = `
+        <button class="chip ${STATE.sort==='الكل'?'active':''}" data-sort="الكل">
+            الكل <span class="chip-count">(${counts['الكل']})</span>
+        </button>
+        ${SORT_OPTIONS.map(s => counts[s] > 0 ? `
+            <button class="chip ${STATE.sort===s?'active':''}" data-sort="${s}">
+                ${s} <span class="chip-count">(${counts[s]})</span>
+            </button>
+        ` : '').join('')}
+    `;
+
+    container.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            STATE.sort = chip.dataset.sort;
+            renderSortChips();
+            renderCustomers();
+        });
+    });
+}
+
+function renderCustomers() {
+    let list = STATE.customers.slice();
+
+    if (STATE.sort !== 'الكل') {
+        list = list.filter(c => c.sort === STATE.sort);
+    }
+
+    if (STATE.search) {
+        const q = STATE.search.toLowerCase();
+        list = list.filter(c =>
+            c.name.toLowerCase().includes(q) ||
+            (c.phone && c.phone.includes(q))
+        );
+    }
+
+    list.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+    const listEl = document.getElementById('customersList');
+    const emptyEl = document.getElementById('customersEmpty');
+    const countEl = document.getElementById('customersCount');
+
+    countEl.textContent = list.length ? `(${list.length})` : '';
+
+    if (list.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+
+        const hasSearch = STATE.search || STATE.sort !== 'الكل';
+        document.getElementById('emptyTitle').textContent =
+            hasSearch ? 'لا نتائج مطابقة' : 'لا يوجد نزلاء';
+        document.getElementById('emptyDesc').textContent =
+            hasSearch ? 'جرّب تغيير البحث أو الفرز' : '—';
+        return;
+    }
+    emptyEl.style.display = 'none';
+
+    listEl.innerHTML = list.map(c => {
+        const bal = { SYP: getBalance(c.id, 'SYP'), USD: getBalance(c.id, 'USD') };
+        const txs = getCustomerTransactions(c.id);
+
+        return `
+            <div class="expandable-card" data-cid="${c.id}">
+                <div class="card-summary neutral">
+                    <div class="card-summary-info">
+                        <div class="card-summary-title">
+                            👤 ${esc(c.name)}
+                            ${c.sort ? `<span class="tag-sort">${esc(c.sort)}</span>` : ''}
+                        </div>
+                        <div class="card-summary-sub">
+                            ${c.phone ? `<span>📞 ${esc(c.phone)}</span>` : ''}
+                            <span>ل.س ${formatNumber(bal.SYP)}</span>
+                            <span>$ ${formatNumber(bal.USD)}</span>
+                        </div>
+                    </div>
+                    <span class="card-summary-arrow">▼</span>
+                </div>
+                <div class="card-details">
+                    <div class="card-details-inner">
+                        ${renderCustomerDetails(c, bal, txs)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    bindCardEvents(listEl);
+}
+
+function renderCustomerDetails(c, bal, txs) {
+    const totals = getCustomerTotals(c.id);
+
+    let html = '';
+
+    // بيانات إضافية
+    if (c.phone) {
+        html += `
+            <div class="detail-row">
+                <span class="detail-label">📞 الهاتف</span>
+                <span class="detail-value ltr">${esc(c.phone)}</span>
+            </div>`;
+    }
+    if (c.notes) {
+        html += `
+            <div class="detail-row">
+                <span class="detail-label">📝 ملاحظات</span>
+                <span class="detail-value">${esc(c.notes)}</span>
+            </div>`;
+    }
+    if (c.created_at) {
+        html += `
+            <div class="detail-row">
+                <span class="detail-label">🗓️ تاريخ التسجيل</span>
+                <span class="detail-value">${formatDate(c.created_at)}</span>
+            </div>`;
+    }
+
+    // إحصائيات الأرصدة
+    html += `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0;">
+            <div style="background:var(--primary-light); padding:10px; border-radius:8px; text-align:center;">
+                <div style="font-size:11px; color:var(--text-soft); margin-bottom:3px;">ل.س — الليرة</div>
+                <div style="font-size:16px; font-weight:900; color:var(--primary); direction:ltr;">${formatNumber(totals.balSYP)}</div>
+                <div style="font-size:10.5px; color:var(--text-light); margin-top:4px;">
+                    إيداع: ${formatNumber(totals.depSYP)} | سحب: ${formatNumber(totals.wdSYP)}
+                </div>
+            </div>
+            <div style="background:var(--success-light); padding:10px; border-radius:8px; text-align:center;">
+                <div style="font-size:11px; color:var(--text-soft); margin-bottom:3px;">$ — الدولار</div>
+                <div style="font-size:16px; font-weight:900; color:var(--success); direction:ltr;">${formatNumber(totals.balUSD)}</div>
+                <div style="font-size:10.5px; color:var(--text-light); margin-top:4px;">
+                    إيداع: ${formatNumber(totals.depUSD)} | سحب: ${formatNumber(totals.wdUSD)}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // سجل الحركات
+    if (txs.length === 0) {
+        html += `
+            <div style="text-align:center; padding:14px; color:var(--text-light); font-size:13px;">
+                📄 لا توجد حركات لهذا النزيل
+            </div>`;
+    } else {
+        html += `
+            <div style="font-weight:800; font-size:13px; margin:12px 0 8px; color:var(--text-soft);">
+                📋 سجل الحركات (${txs.length})
+            </div>
+            <div class="tx-list">
+                ${txs.map(t => {
+                    const isDep = t.type === 'deposit';
+                    const cur = t.currency === 'SYP' ? 'ل.س' : '$';
+                    const sign = isDep ? '+' : '−';
+                    return `
+                        <div class="grouped-tx ${isDep ? 'deposit' : 'withdraw'}">
+                            <div>
+                                <div style="font-weight:700; color:${isDep ? 'var(--success)' : 'var(--danger)'};">
+                                    ${isDep ? '💰 إيداع' : '💸 سحب'}
+                                </div>
+                                <div style="font-size:11.5px; color:var(--text-light); margin-top:2px;">
+                                    📅 ${formatDate(t.date)}
+                                    ${isDep && t.depositor_name ? ` • 👤 ${esc(t.depositor_name)}` : ''}
+                                    ${!isDep && t.invoice ? ` • 🧾 ${esc(t.invoice)}` : ''}
+                                    ${t.notes ? ` • 📝 ${esc(t.notes)}` : ''}
+                                </div>
+                            </div>
+                            <div style="font-weight:900; font-size:13.5px; direction:ltr;
+                                 color:${isDep ? 'var(--success)' : 'var(--danger)'};">
+                                ${sign} ${cur} ${formatNumber(t.amount)}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    // أزرار
+    html += `
+        <div class="card-actions">
+            <button class="btn btn-primary" data-action="print" data-cid="${c.id}">🖨️ طباعة PDF</button>
+        </div>
+    `;
+
+    return html;
+}
+
+function bindCardEvents(container) {
+    // توسيع/إغلاق البطاقة
+    container.querySelectorAll('.expandable-card').forEach(card => {
+        const summary = card.querySelector('.card-summary');
+        summary.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            card.classList.toggle('expanded');
+        });
+    });
+
+    // أزرار الطباعة
+    container.querySelectorAll('[data-action="print"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            printCustomer(btn.dataset.cid);
+        });
+    });
+}
+
+
+/* =========================================================
+   7) طباعة PDF
+   ========================================================= */
+function printCustomer(customerId) {
+    // في القارئ: نأخذ النزيل من STATE فقط
+    const c = STATE.customers.find(x => x.id === customerId);
+    if (!c) { toast('النزيل غير موجود', 'error'); return; }
+
+    const t = getCustomerTotals(c.id);
+    const txs = getCustomerTransactions(c.id);
+
+    let rows = txs.map(x => {
+        const isDep = x.type === 'deposit';
+        const color = isDep ? '#10b981' : '#ef4444';
+        const sign = isDep ? '+' : '−';
+        const cur = x.currency === 'SYP' ? 'ل.س' : '$';
+        return `
+            <tr style="border-bottom:1px solid #e5e7eb;">
+                <td style="padding:6px 4px; text-align:center; font-size:11px;">${formatDate(x.date)}</td>
+                <td style="padding:6px 4px; text-align:center; color:${color}; font-weight:700; font-size:11px;">${isDep?'إيداع':'سحب'}</td>
+                <td style="padding:6px 4px; text-align:center; font-size:11px;">${x.currency==='SYP'?'ليرة':'دولار'}</td>
+                <td style="padding:6px 4px; text-align:center; font-weight:700; direction:ltr; color:${color}; font-size:11px;">
+                    ${sign} ${formatNumber(x.amount)} ${cur}
+                </td>
+                <td style="padding:6px 4px; text-align:center; font-size:10.5px;">${esc(x.depositor_name || '—')}</td>
+                <td style="padding:6px 4px; text-align:center; font-size:10.5px;">${esc(x.invoice || '—')}</td>
+                <td style="padding:6px 4px; text-align:center; font-size:10.5px; color:#6b7280;">${esc(x.notes || '—')}</td>
+            </tr>
+        `;
+    }).join('');
+
+    if (!rows) rows = `<tr><td colspan="7" style="padding:20px; text-align:center; color:#6b7280; font-size:11px;">لا توجد حركات</td></tr>`;
+
+    const printContainer = document.getElementById('print-container');
+
+    printContainer.innerHTML = `
+        <div style="text-align:center; margin-bottom:16px; border-bottom:3px solid #f37021; padding-bottom:10px;">
+            <h1 style="color:#f37021; margin:0; font-size:22px;">🏦 الأمانات</h1>
+            <p style="color:#6b7280; margin:4px 0 0; font-size:11px;">تقرير من نسخة احتياطية — عرض فقط</p>
+        </div>
+
+        <div style="background:#fff3ec; padding:12px; border-radius:8px; margin-bottom:10px;">
+            <h2 style="margin:0 0 5px; font-size:17px;">
+                ${esc(c.name)}
+                ${c.sort ? `<span style="font-size:12px; color:#f37021;">(${esc(c.sort)})</span>` : ''}
+            </h2>
+            ${c.phone ? `<p style="margin:2px 0; color:#6b7280; font-size:12px; direction:ltr;">📞 ${esc(c.phone)}</p>` : ''}
+            ${c.notes ? `<p style="margin:2px 0; color:#6b7280; font-size:11px;">📝 ${esc(c.notes)}</p>` : ''}
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+            <tr>
+                <td style="width:50%; padding:0 4px 0 0; vertical-align:top;">
+                    <div style="background:#fff3ec; padding:10px; border-radius:8px; text-align:center;">
+                        <div style="color:#6b7280; font-size:11px; margin-bottom:3px;">🍋 رصيد الليرة</div>
+                        <div style="color:#f37021; font-size:18px; font-weight:900; direction:ltr;">${formatNumber(t.balSYP)}</div>
+                        <div style="font-size:10px; color:#6b7280; margin-top:4px;">
+                            إيداع: ${formatNumber(t.depSYP)} | سحب: ${formatNumber(t.wdSYP)}
+                        </div>
+                    </div>
+                </td>
+                <td style="width:50%; padding:0 0 0 4px; vertical-align:top;">
+                    <div style="background:#ecfdf5; padding:10px; border-radius:8px; text-align:center;">
+                        <div style="color:#6b7280; font-size:11px; margin-bottom:3px;">💵 رصيد الدولار</div>
+                        <div style="color:#10b981; font-size:18px; font-weight:900; direction:ltr;">${formatNumber(t.balUSD)}</div>
+                        <div style="font-size:10px; color:#6b7280; margin-top:4px;">
+                            إيداع: ${formatNumber(t.depUSD)} | سحب: ${formatNumber(t.wdUSD)}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <h3 style="margin:0 0 8px; font-size:14px;">📋 سجل الحركات (${txs.length})</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:11px; border:1px solid #e5e7eb;">
+            <thead>
+                <tr style="background:#f5f5f5;">
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">التاريخ</th>
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">النوع</th>
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">العملة</th>
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">المبلغ</th>
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">المودع</th>
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">الفاتورة</th>
+                    <th style="padding:6px 4px; border-bottom:2px solid #f37021; font-size:10.5px;">ملاحظات</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+
+        <div style="margin-top:14px; text-align:center; color:#6b7280; font-size:10px; border-top:1px solid #e5e7eb; padding-top:8px;">
+            تقرير من نسخة احتياطية بتاريخ ${formatDate(STATE.exportDate || new Date().toISOString())}
+            <br>تم التوليد بتاريخ ${formatDate(new Date().toISOString())}
+        </div>
+    `;
+
+    setTimeout(() => {
+        window.print();
+    }, 200);
+}
+
+/* =========================================================
+   8) الوضع الليلي
+   ========================================================= */
+function toggleDarkMode() {
+    STATE.darkMode = !STATE.darkMode;
+    document.body.classList.toggle('dark', STATE.darkMode);
+    document.getElementById('btnDarkMode').textContent = STATE.darkMode ? '☀️' : '🌙';
+    localStorage.setItem('viewer_darkMode', STATE.darkMode ? '1' : '0');
+    toast(STATE.darkMode ? 'الوضع الليلي 🌙' : 'الوضع النهاري ☀️');
+}
+
+
+/* =========================================================
+   9) ربط الأحداث
+   ========================================================= */
+function bindEvents() {
+
+    // منطقة الرفع (نقر)
+    document.getElementById('uploadArea').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    // اختيار الملف
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        if (e.target.files[0]) loadFile(e.target.files[0]);
+    });
+
+    // السحب والإفلات
+    const uploadArea = document.getElementById('uploadArea');
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        uploadArea.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.style.borderColor = 'var(--primary)';
+            uploadArea.style.background = 'var(--primary-light)';
+            uploadArea.style.transform = 'scale(1.02)';
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+        uploadArea.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+            uploadArea.style.transform = '';
+        });
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        const file = e.dataTransfer.files[0];
+        if (file) loadFile(file);
+    });
+
+    // البحث
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        STATE.search = e.target.value.trim();
+        renderCustomers();
+    });
+
+    // الوضع الليلي
+    document.getElementById('btnDarkMode').addEventListener('click', toggleDarkMode);
+
+    // إعادة تحميل ملف آخر
+    document.getElementById('btnReload').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    // إغلاق الملف
+    document.getElementById('btnCloseFile').addEventListener('click', () => {
+        if (confirm('هل تريد إغلاق الملف الحالي والرجوع للبداية؟')) {
+            resetFile();
+        }
+    });
+}
+
+
+/* =========================================================
+   10) التشغيل الأولي
+   ========================================================= */
+function init() {
+    // الوضع الليلي المحفوظ
+    if (localStorage.getItem('viewer_darkMode') === '1') {
+        STATE.darkMode = true;
+        document.body.classList.add('dark');
+        document.getElementById('btnDarkMode').textContent = '☀️';
+    }
+
+    bindEvents();
+    showView('viewWelcome');
+
+    console.log('✅ قارئ النسخ الاحتياطية جاهز');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+})();
+</script>
